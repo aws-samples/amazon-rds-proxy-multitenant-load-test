@@ -21,6 +21,9 @@ Parameters:
   SecondaryInstanceCapacity:
     Type: Number
 
+  OnPremIp:
+    Type: String
+
 Resources:
   PrimarySecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -31,7 +34,7 @@ Resources:
           Description: Allow all outbound traffic by default
           IpProtocol: "-1"
       SecurityGroupIngress:
-        - CidrIp: 0.0.0.0/0
+        - CidrIp: !Ref OnPremIp
           Description: allow locust port
           FromPort: 80
           IpProtocol: tcp
