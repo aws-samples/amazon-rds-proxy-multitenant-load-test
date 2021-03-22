@@ -1,0 +1,178 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Privides API Gateway endpoint for Locust App.
+
+Parameters:
+  VpcCidrBlock:
+    Type: String
+
+  VpcID:
+    Type: AWS::EC2::VPC::Id
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet::Id
+
+  ProxyAccessLambda:
+    Type: String
+
+  NoProxyAccessLambda:
+    Type: String
+
+  ApiEndpointType:
+    Type: String
+
+Resources:
+  VPCEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: loadtest/load_test_vpc/proxytest_apigw_interface_endpoint/SecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: !Ref VpcCidrBlock
+          Description: !Join
+            - ""
+            - - 'from '
+              - !Ref VpcCidrBlock
+              - :443
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: loadtest/load_test_vpc
+      VpcId: !Ref VpcID
+
+  VPCEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Properties:
+      ServiceName: !Sub com.amazonaws.${AWS::Region}.execute-api
+      VpcId: !Ref VpcID
+      PrivateDnsEnabled: true
+      SecurityGroupIds:
+        - !GetAtt VPCEndpointSecurityGroup.GroupId
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      VpcEndpointType: Interface
+
+  LoadTestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      EndpointConfiguration:
+        Types:
+          - !Ref ApiEndpointType
+        VpcEndpointIds:
+          - !Ref VPCEndpoint
+      Name: LoadTestApi
+      Policy:
+        Statement:
+          - Action: execute-api:Invoke
+            Condition:
+              StringEquals:
+                aws:sourceVpce: !Ref VPCEndpoint
+            Effect: Allow
+            Principal: '*'
+            Resource: execute-api:/*
+        Version: "2012-10-17"
+
+  CloudWatchRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: apigateway.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - !Join
+          - ""
+          - - 'arn:'
+            - !Ref 'AWS::Partition'
+            - :iam::aws:policy/service-role/AmazonAPIGatewayPushToCloudWatchLogs
+
+  LoadTestApiAccount:
+    Type: AWS::ApiGateway::Account
+    DependsOn:
+      - LoadTestApi
+    Properties:
+      CloudWatchRoleArn: !GetAtt CloudWatchRole.Arn
+
+  LoadTestApiGET:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      HttpMethod: GET
+      ResourceId: !GetAtt LoadTestApi.RootResourceId
+      RestApiId: !Ref LoadTestApi
+      AuthorizationType: NONE
+      Integration:
+        IntegrationHttpMethod: POST
+        Type: AWS_PROXY
+        Uri: !Join
+          - ""
+          - - !Sub arn:aws:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/
+            - !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}
+            - :function:${stageVariables.lbfunc}/invocations
+      RequestParameters:
+        method.request.querystring.tenant: true
+
+  NoProxyApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - LoadTestApiGET
+    Properties:
+      RestApiId: !Ref LoadTestApi
+
+  NoProxyApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref LoadTestApi
+      DeploymentId: !Ref NoProxyApiDeployment
+      StageName: no_proxy_stage
+      TracingEnabled: true
+      Variables:
+        lbfunc: !Ref NoProxyAccessLambda
+
+  ProxyApiDeployment:
+    Type: AWS::ApiGateway::Deployment
+    DependsOn:
+      - LoadTestApiGET
+    Properties:
+      RestApiId: !Ref LoadTestApi
+
+  ProxyApiStage:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref LoadTestApi
+      DeploymentId: !Ref ProxyApiDeployment
+      StageName: proxy_stage
+      TracingEnabled: true
+      Variables:
+        lbfunc: !Ref ProxyAccessLambda
+
+  ProxyLambdaAccessPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${ProxyAccessLambda}
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${LoadTestApi}/*/GET/
+
+  NoProxyLambdaAccessPermission:
+    Type: AWS::Lambda::Permission
+    Properties:
+      FunctionName: !Sub arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${NoProxyAccessLambda}
+      Action: lambda:InvokeFunction
+      Principal: apigateway.amazonaws.com
+      SourceArn: !Sub arn:aws:execute-api:${AWS::Region}:${AWS::AccountId}:${LoadTestApi}/*/GET/
+
+Outputs:
+  ApiGatewayURL:
+    Value: !Sub https://${LoadTestApi}.execute-api.${AWS::Region}.amazonaws.com

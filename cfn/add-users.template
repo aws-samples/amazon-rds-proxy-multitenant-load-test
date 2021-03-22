@@ -1,0 +1,170 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Adds users and dummy data to the database.
+
+Parameters:
+  VpcID:
+    Type: AWS::EC2::VPC::Id
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet::Id
+
+  LayerVersionArn:
+    Type: String
+
+  Endpoint:
+    Type: String
+
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+
+  CreateRDSProxy:
+    Type: String
+
+  DBSecretArn:
+    Type: String
+
+  DBProxyName:
+    Type: String
+
+  DBProxyArn:
+    Type: String
+
+  ProxySecurityGroup:
+    Type: String # Has to be type String as NoProxy has 'NA' value
+
+Conditions:
+  IsRDSProxy: !Equals [!Ref CreateRDSProxy, true]
+
+  NoRDSProxy: !Equals [!Ref CreateRDSProxy, false]
+
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  ProxyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../src/functions/proxy
+      Description: Tenant data access function.
+      Environment:
+        Variables:
+          ENDPOINT: !Ref Endpoint
+          PASSWORD: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/user
+          USER: admin
+          USERS_TO_CREATE: 200
+          REGION: !Sub ${AWS::Region}
+          SECRETARN: !Ref DBSecretArn
+          DATABASE: test2
+          NUMBER_OF_ROWS: 1000
+          PROXY_NAME: !Ref DBProxyName
+      FunctionName: !Sub fn-${AWS::StackName}
+      Handler: cr_add_users_proxy.handler
+      Layers:
+        - !Ref LayerVersionArn
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
+        - AWSLambdaBasicExecutionRole
+        - AWSLambdaVPCAccessExecutionRole
+        - AWSLambdaReadOnlyAccess
+        - SecretsManagerReadWrite
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - rds:ModifyDBProxy
+              Resource: !Ref DBProxyArn
+      Runtime: python3.8
+      Timeout: 900
+      Tracing: Active
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LamdaSecurityGroup
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+    Condition: IsRDSProxy
+
+  ProxyLambdaCustom:
+    Type: Custom::ProxyAddUsers
+    Properties:
+      ServiceToken: !GetAtt ProxyLambdaFunction.Arn
+    Version: "1.0"
+    Condition: IsRDSProxy
+
+  NoProxyLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../src/functions/noproxy
+      Description: Tenant data access function.
+      Environment:
+        Variables:
+          ENDPOINT: !Ref Endpoint
+          USER: admin
+          USERS_TO_CREATE: 200
+          NUMBER_OF_ROWS: 1000
+          REGION: !Sub ${AWS::Region}
+          DATABASE: test2
+          SECRETARN: !Ref DBSecretArn
+      FunctionName: !Sub fn-${AWS::StackName}
+      Handler: cr_add_users_noproxy.handler
+      Layers:
+        - !Ref LayerVersionArn
+      Policies:
+        - AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
+        - AWSLambdaBasicExecutionRole
+        - AWSLambdaVPCAccessExecutionRole
+        - AWSLambdaReadOnlyAccess
+        - SecretsManagerReadWrite
+      Runtime: python3.8
+      Timeout: 900
+      Tracing: Active
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LamdaSecurityGroup
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+    Condition: NoRDSProxy
+
+  NoProxyLambdaCustom:
+    Type: Custom::ProxyAddUsers
+    Properties:
+      ServiceToken: !GetAtt NoProxyLambdaFunction.Arn
+    Version: "1.0"
+    Condition: NoRDSProxy
+
+  LamdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Lambda Security Group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: !Ref VpcID
+
+  LambdaToRDSIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Lambda to RDS ingress rule
+      FromPort: 3306
+      GroupId: !Ref RDSSecurityGroup
+      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      ToPort: 3306
+
+  LambdaToProxyIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Lambda to Proxy ingress rule
+      FromPort: 3306
+      GroupId: !Ref ProxySecurityGroup
+      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      ToPort: 3306
+    Condition: IsRDSProxy

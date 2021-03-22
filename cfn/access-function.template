@@ -1,0 +1,173 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Creates a Lambda function that handles the tenant data access.
+
+Parameters:
+  VpcID:
+    Type: AWS::EC2::VPC::Id
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet::Id
+
+  LambdaRuntimeEnv:
+    Type: String
+
+  LayerVersionArn:
+    Type: String
+
+  Endpoint:
+    Type: String
+
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+
+  ProxySecurityGroup:
+    Type: String # Has to be type String as NoProxy has 'NA' value
+
+  CreateRDSProxy:
+    Type: String
+
+Conditions:
+  IsPython: !Equals [!Ref LambdaRuntimeEnv, Python]
+
+  IsNodeJs: !Equals [!Ref LambdaRuntimeEnv, Nodejs]
+
+  IsRDSProxy: !Equals [!Ref CreateRDSProxy, true]
+
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  PythonLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../src/functions/python
+      Description: Tenant data access function.
+      Environment:
+        Variables:
+          AWS_STS_REGIONAL_ENDPOINTS: regional
+          endpoint: !Ref Endpoint
+          cluster_endpoint_resource: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/user
+          region: !Sub ${AWS::Region}
+          iam_arn: !GetAtt STSRole.Arn
+      FunctionName: !Sub fn-${AWS::StackName}
+      Handler: access.lambda_handler
+      Layers:
+        - !Ref LayerVersionArn
+      Role: !GetAtt LambdaAccessRole.Arn
+      Runtime: python3.8
+      Timeout: 60 #900
+      Tracing: Active
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LamdaSecurityGroup
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+    Condition: IsPython
+
+  NodeJsLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: ../src/functions/nodejs
+      Description: Tenant data access function.
+      Environment:
+        Variables:
+          AWS_STS_REGIONAL_ENDPOINTS: regional
+          endpoint: !Ref Endpoint
+          cluster_endpoint_resource: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/user
+          region: !Sub ${AWS::Region}
+          iam_arn: !GetAtt STSRole.Arn
+      FunctionName: !Sub fn-${AWS::StackName}
+      Handler: index.handler
+      Layers:
+        - !Ref LayerVersionArn
+      Role: !GetAtt LambdaAccessRole.Arn
+      Runtime: nodejs12.x
+      Timeout: 60 #900
+      Tracing: Active
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref LamdaSecurityGroup
+        SubnetIds:
+          - !Ref PrivateSubnet1
+          - !Ref PrivateSubnet2
+    Condition: IsNodeJs
+
+  LamdaSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Lambda Security Group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: !Ref VpcID
+
+  LambdaToRDSIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Lambda to RDS ingress rule
+      FromPort: 3306
+      GroupId: !Ref RDSSecurityGroup
+      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      ToPort: 3306
+
+  LambdaToProxyIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Lambda to Proxy ingress rule
+      FromPort: 3306
+      GroupId: !Ref ProxySecurityGroup
+      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      ToPort: 3306
+    Condition: IsRDSProxy
+
+  LambdaAccessRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AWSXrayWriteOnlyAccess
+        - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
+        - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
+        - arn:aws:iam::aws:policy/AWSLambdaReadOnlyAccess
+
+  STSRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              AWS: !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${LambdaAccessRole}/fn-${AWS::StackName}
+        Version: "2012-10-17"
+      Policies:
+        - PolicyDocument:
+            Statement:
+              - Action: rds-db:connect
+                Effect: Allow
+                Resource: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*
+            Version: "2012-10-17"
+          PolicyName: "0"
+
+Outputs:
+  PythonLambdaFunction:
+    Value: !Ref PythonLambdaFunction
+    Condition: IsPython
+
+  NodeJsLambdaFunction:
+    Value: !Ref NodeJsLambdaFunction
+    Condition: IsNodeJs

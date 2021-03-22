@@ -1,0 +1,60 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Creates a CLoudWatch Dashboard to monitor Lambda functions.
+
+Parameters:
+  ProxyAccessLambda:
+    Type: String
+
+  NoProxyAccessLambda:
+    Type: String
+
+  ProxyInstanceName:
+    Type: String
+
+  NoProxyInstanceName:
+    Type: String
+
+Resources:
+  LoadTestDashboard:
+    Type: AWS::CloudWatch::Dashboard
+    Properties:
+      DashboardBody: !Join
+        - ""
+        - - '{"widgets": [{"type": "metric", "x": 0, "y": 12, "width": 6, "height": 6, "properties": {"metrics": [["AWS/Lambda", "ConcurrentExecutions", "FunctionName", "'
+          - !Ref NoProxyAccessLambda
+          - '", "Resource", "'
+          - !Ref NoProxyAccessLambda
+          - '", {"label": "No Proxy"}], ["...", "'
+          - !Ref ProxyAccessLambda
+          - '", ".", "'
+          - !Ref ProxyAccessLambda
+          - !Sub '", {"label": "Proxy"}]], "region": "${AWS::Region}", "title": "Lambda Concurrent executions", "view": "timeSeries", "stacked": false, "period": 300, "stat": "Maximum", "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 0, "y": 6, "width": 6, "height": 6, "properties": {"metrics": [["AWS/Lambda", "Invocations", "FunctionName", "'
+          - !Ref NoProxyAccessLambda
+          - '", "Resource", "'
+          - !Ref NoProxyAccessLambda
+          - '", {"label": "No Proxy"}], ["...", "'
+          - !Ref ProxyAccessLambda
+          - '", ".", "'
+          - !Ref ProxyAccessLambda
+          - !Sub '", {"label": "Proxy"}]], "region": "${AWS::Region}", "title": "Lambda Invocations", "view": "timeSeries", "stacked": false, "period": 300, "stat": "Sum"}}, {"type": "metric", "x": 6, "y": 6, "width": 6, "height": 6, "properties": {"metrics": [["AWS/Lambda", "Errors", "FunctionName", "'
+          - !Ref NoProxyAccessLambda
+          - '", "Resource", "'
+          - !Ref NoProxyAccessLambda
+          - !Sub '", {"id": "errors", "color": "#d13212"}], [".", "Invocations", ".", ".", ".", ".", {"id": "invocations", "visible": false}], [{"expression": "100 - 100 * errors / MAX([errors, invocations])", "label": "Success rate (%)", "id": "availability", "yAxis": "right", "region": "${AWS::Region}"}]], "region": "${AWS::Region}", "title": "No Proxy Lambda Error & Success Rate", "yAxis": {"right": {"max": 100, "label": "Success Rate", "min": 0, "showUnits": false}, "left": {"label": "Error Count", "min": 0, "showUnits": false}}, "view": "timeSeries", "stacked": false, "period": 300, "stat": "Sum"}}, {"type": "metric", "x": 12, "y": 6, "width": 6, "height": 6, "properties": {"metrics": [["AWS/Lambda", "Errors", "FunctionName", "'
+          - !Ref ProxyAccessLambda
+          - '", "Resource", "'
+          - !Ref ProxyAccessLambda
+          - !Sub '", {"id": "errors", "stat": "Sum", "color": "#d13212"}], [".", "Invocations", ".", ".", ".", ".", {"id": "invocations", "stat": "Sum", "visible": false}], [{"expression": "100 - 100 * errors / MAX([errors, invocations])", "label": "Success rate (%)", "id": "availability", "yAxis": "right", "region": "${AWS::Region}"}]], "region": "${AWS::Region}", "title": "Proxy Lambda Error & Success Rate", "yAxis": {"right": {"max": 100, "label": "Success Rate", "min": 0, "showUnits": false}, "left": {"label": "Error Count", "showUnits": false, "min": 0}}, "view": "timeSeries", "stacked": false, "period": 300}}, {"type": "metric", "x": 18, "y": 6, "width": 6, "height": 6, "properties": {"metrics": [["AWS/Lambda", "Throttles", "FunctionName", "'
+          - !Ref NoProxyAccessLambda
+          - '", "Resource", "'
+          - !Ref NoProxyAccessLambda
+          - '", {"label": "No Proxy"}], ["...", "'
+          - !Ref ProxyAccessLambda
+          - '", ".", "'
+          - !Ref ProxyAccessLambda
+          - !Sub '", {"label": "Proxy"}]], "region": "${AWS::Region}", "view": "timeSeries", "stacked": false, "title": "Lambda Throttles", "period": 300, "stat": "Sum", "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 0, "y": 18, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "CPUUtilization", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${ProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "stat": "Average", "period": 300, "title": "Writer CPU Utilization", "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 6, "y": 12, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "DatabaseConnections", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${ProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "stat": "Average", "period": 60, "title": "Writer DB Connections", "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 12, "y": 12, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "NetworkReceiveThroughput", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${ProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "stat": "Average", "period": 300, "title": "Writer NetworkReceiveThroughput", "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 18, "y": 12, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "SelectThroughput", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${ProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "title": "Writer Select Throughput", "stat": "Average", "period": 300, "yAxis": {"left": {"label": "", "min": 0}}}}, {"type": "metric", "x": 6, "y": 18, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "SelectLatency", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${NoProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "title": "Writer Select Latency", "region": "${AWS::Region}", "stat": "Average", "period": 300, "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 18, "y": 0, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "Queries", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${ProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "title": "Writer Queries", "stat": "Average", "period": 300, "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 12, "y": 18, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "NetworkThroughput", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${ProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "stat": "Average", "period": 300, "title": "Writer Network Throughput", "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 18, "y": 18, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "ResultSetCacheHitRatio", "DBInstanceIdentifier", "${NoProxyInstanceName}", {"label": "No Proxy"}], ["...", "${ProxyInstanceName}", {"label": "Proxy"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "title": "Writer ResultSetCacheHitRatio", "stat": "Average", "period": 300, "yAxis": {"left": {"label": "0"}}}}, {"type": "metric", "x": 0, "y": 24, "width": 12, "height": 6, "properties": {"metrics": [["AWS/RDS", "DatabaseConnections", "ProxyName", "proxy987123"], [".", "DatabaseConnectionRequests", ".", "."], [".", "MaxDatabaseConnectionsAllowed", ".", "."]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "title": "Proxy DatabaseConnections", "period": 300, "stat": "Sum", "yAxis": {"left": {"min": 0}}}}, {"type": "metric", "x": 12, "y": 18, "width": 6, "height": 6, "properties": {"metrics": [["AWS/RDS", "ClientConnectionsReceived", "ProxyName", "proxy987123", {"label": "Received"}], [".", "ClientConnectionsSetupSucceeded", ".", ".", {"label": "Setup Succeeded"}]], "view": "timeSeries", "stacked": false, "region": "${AWS::Region}", "title": "Proxy Client Connections", "stat": "Sum", "period": 300}}]}'
+
+Outputs:
+  LoadTestDashboard:
+    Value: !Ref LoadTestDashboard

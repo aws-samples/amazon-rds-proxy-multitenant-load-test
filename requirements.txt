@@ -1,0 +1,3 @@
+awscli
+bump2version
+pre-commit

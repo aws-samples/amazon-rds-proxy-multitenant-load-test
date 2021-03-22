@@ -1,0 +1,5 @@
+AWS_REGION=""
+BUCKET_NAME=""
+STACK_NAME="rds-test-01"
+LOAD_TEST="true|false"
+LAMBDA_RUNTIME_ENV="Nodejs|Python"

@@ -1,0 +1,317 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Creates a EC2 with Locust load test App.
+
+Parameters:
+  VpcID:
+    Type: AWS::EC2::VPC::Id
+
+  SubnetID:
+    Type: AWS::EC2::Subnet::Id
+
+  InstanceAMI:
+    Type: AWS::EC2::Image::Id
+
+  InstanceType:
+    Type: String
+
+  LocustVersion:
+    Type: String
+
+  SecondaryInstanceCapacity:
+    Type: Number
+
+Resources:
+  PrimarySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: loadtest/primarySecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      SecurityGroupIngress:
+        - CidrIp: 0.0.0.0/0
+          Description: allow locust port
+          FromPort: 80
+          IpProtocol: tcp
+          ToPort: 80
+      VpcId: !Ref VpcID
+
+  SecondarySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: loadtest/secondarySecurityGroup
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: !Ref VpcID
+
+  PrimarySecurityGroupFromSecondarySecurityGroup:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: allow secondary connection
+      FromPort: 5557
+      GroupId: !Ref PrimarySecurityGroup
+      SourceSecurityGroupId: !Ref SecondarySecurityGroup
+      ToPort: 5557
+
+  LoadTestRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - ec2.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      Path: /
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore
+
+  PrimaryInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref LoadTestRole
+
+  SecondaryInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Properties:
+      Roles:
+        - !Ref LoadTestRole
+
+  PrimaryInstance:
+    CreationPolicy:
+      ResourceSignal:
+        Count: 1
+        Timeout: PT10M
+    Type: AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          app_install:
+            - instance_prep
+            - app_install
+        instance_prep:
+          packages:
+            yum:
+              python3-pip: []
+              gcc: []
+              python3-devel: []
+          files:
+            /etc/cfn/cfn-hup.conf:
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+                interval=1
+              mode: "000400"
+              owner: root
+              group: root
+            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.PrimaryInstance.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource PrimaryInstance --configsets app_install --region ${AWS::Region}
+                runas=root
+              mode: "000400"
+              owner: root
+              group: root
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+              amazon-ssm-agent:
+                enabled: true
+                ensureRunning: true
+        app_install:
+          files:
+            /locustfile.py:
+              content: |
+                import random
+                from locust import HttpUser, task, between
+                class MyLoadTest(HttpUser):
+                    wait_time = between(5, 9)
+                    @task(1)
+                    def without_proxy(self):
+                        to_get = "/no_proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        self.client.get(to_get, name='noproxy')
+                    @task(1)
+                    def with_proxy(self):
+                        to_get = "/proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        self.client.get(to_get, name='proxy')
+              mode: "000755"
+              owner: root
+              group: root
+          commands:
+            01-install-locust:
+              command: !Sub python3 -m pip install locust==${LocustVersion}
+              ignoreErrors: true
+            02-start-locust:
+              command: locust -P 80 -f locustfile.py --master </dev/null &>/dev/null & #dettach from STDOUT and Start process in own shell
+              test: test -x /locustfile.py # check if file exists and is executable
+              ignoreErrors: true
+    Properties:
+      IamInstanceProfile: !Ref PrimaryInstanceProfile
+      ImageId: !Ref InstanceAMI
+      InstanceType: !Ref InstanceType
+      SecurityGroupIds:
+        - !Ref PrimarySecurityGroup
+      SubnetId: !Ref SubnetID
+      Tags:
+        - Key: Name
+          Value: locust-primary
+      UserData: !Base64
+        Fn::Sub: |
+          #!/bin/bash -xe
+          yum update -y
+          # Update aws-cfn-bootstrap to the latest
+          yum install -y aws-cfn-bootstrap
+          # Call cfn-init script to install files and packages
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource PrimaryInstance --configsets app_install --region ${AWS::Region}
+          # Call cfn-signal script to send a signal with exit code
+          /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource PrimaryInstance --region ${AWS::Region}
+
+  SecondaryInstanceLaunchTemplate:
+    Type: AWS::EC2::LaunchTemplate
+    Metadata:
+      AWS::CloudFormation::Init:
+        configSets:
+          app_install:
+            - instance_prep
+            - app_install
+        instance_prep:
+          packages:
+            yum:
+              python3-pip: []
+              gcc: []
+              python3-devel: []
+          files:
+            /etc/cfn/cfn-hup.conf:
+              content: !Sub |
+                [main]
+                stack=${AWS::StackId}
+                region=${AWS::Region}
+                interval=1
+              mode: "000400"
+              owner: root
+              group: root
+            /etc/cfn/hooks.d/cfn-auto-reloader.conf:
+              content: !Sub |
+                [cfn-auto-reloader-hook]
+                triggers=post.update
+                path=Resources.SecondaryInstanceLaunchTemplate.Metadata.AWS::CloudFormation::Init
+                action=/opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource SecondaryInstanceLaunchTemplate --configsets app_install --region ${AWS::Region}
+                runas=root
+              mode: "000400"
+              owner: root
+              group: root
+          services:
+            sysvinit:
+              cfn-hup:
+                enabled: true
+                ensureRunning: true
+                files:
+                  - /etc/cfn/cfn-hup.conf
+                  - /etc/cfn/hooks.d/cfn-auto-reloader.conf
+              amazon-ssm-agent:
+                enabled: true
+                ensureRunning: true
+        app_install:
+          files:
+            /locustfile.py:
+              content: |
+                import random
+                from locust import HttpUser, task, between
+                class MyLoadTest(HttpUser):
+                    wait_time = between(5, 9)
+                    @task(1)
+                    def without_proxy(self):
+                        to_get = "/no_proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        self.client.get(to_get, name='noproxy')
+                    @task(1)
+                    def with_proxy(self):
+                        to_get = "/proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        self.client.get(to_get, name='proxy')
+              mode: "000755"
+              owner: root
+              group: root
+          commands:
+            01-install-locust:
+              command: !Sub python3 -m pip install locust==${LocustVersion}
+              ignoreErrors: true
+            02-start-locust:
+              command: !Join
+                - ' '
+                - - locust -f locustfile.py --worker --master-host
+                  - !GetAtt PrimaryInstance.PrivateIp
+                  - </dev/null &>/dev/null & #dettach from STDOUT and Start process in own shell
+              test: test -x /locustfile.py # check if file exists and is executable
+              ignoreErrors: true
+    Properties:
+      LaunchTemplateData:
+        IamInstanceProfile:
+          Name: !Ref SecondaryInstanceProfile
+        ImageId: !Ref InstanceAMI
+        SecurityGroupIds:
+          - !Ref SecondarySecurityGroup
+        TagSpecifications:
+          - ResourceType: instance
+            Tags:
+              - Key: Name
+                Value: locust-worker
+          - ResourceType: volume
+            Tags:
+              - Key: Name
+                Value: locust-worker
+        UserData: !Base64
+          Fn::Sub: |
+            #!/bin/bash -xe
+            yum update -y
+            # Update aws-cfn-bootstrap to the latest
+            yum install -y aws-cfn-bootstrap
+            # Call cfn-init script to install files and packages
+            /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource SecondaryInstanceLaunchTemplate --configsets app_install --region ${AWS::Region}
+
+  SpotFleetRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - spotfleet.amazonaws.com
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonEC2SpotFleetTaggingRole
+
+  SecondaryInstanceSpotFleet:
+    Type: AWS::EC2::SpotFleet
+    Properties:
+      SpotFleetRequestConfigData:
+        AllocationStrategy: diversified
+        IamFleetRole: !GetAtt SpotFleetRole.Arn
+        TargetCapacity: !Ref SecondaryInstanceCapacity
+        LaunchTemplateConfigs:
+          - LaunchTemplateSpecification:
+              LaunchTemplateId: !Ref SecondaryInstanceLaunchTemplate
+              Version: "1"
+            Overrides:
+              - InstanceType: !Ref InstanceType
+                SubnetId: !Ref SubnetID
+
+Outputs:
+  LocustAddress:
+    Value: !GetAtt PrimaryInstance.PublicDnsName

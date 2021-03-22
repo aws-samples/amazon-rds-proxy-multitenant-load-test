@@ -1,0 +1,478 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Builds Amazon RDS with Proxy (uksb-1rkqqff0c).
+
+Metadata:
+  Version: 0.0.1
+
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      - Label:
+          default: Region configuration
+        Parameters:
+          - AvailabilityZones
+      - Label:
+          default: Main configuration
+        Parameters:
+          - DBInstanceClass
+          - PerformanceInsightsRetentionPeriod
+          - LambdaRuntimeEnv
+          - Environment
+      - Label:
+          default: Load test configuration
+        Parameters:
+          - CreateLoadTest
+          - LocustAmiId
+          - LocustInstanceType
+          - LocustVersion
+          - LocustSecondaryInstanceCapacity
+          - ApiEndpointType
+    ParameterLabels:
+      AvailabilityZones:
+        default: Availability Zones
+      DBInstanceClass:
+        default: Database Instance Class
+      PerformanceInsightsRetentionPeriod:
+        deafult: Performance Insights Retention Period
+      LambdaRuntimeEnv:
+        default: Lambda Runtime Environment
+      Environment:
+        deafult: Infrastructure Environment
+      CreateLoadTest:
+        default: Create Load Test Stack
+      LocustAmiId:
+        default: Latest Amazon Linux AMI
+      LocustInstanceType:
+        default: Locust Instance Type
+      LocustVersion:
+        default: Locust App Version
+      LocustSecondaryInstanceCapacity:
+        deafult: Locust Worker Instances
+      ApiEndpointType:
+        default: API Endpoint Type
+
+Parameters:
+  CreateLoadTest:
+    Description: Should the CloudFormation create a Load Test stack. Load test stack will be created, if set to 'true'.
+    Type: String
+    AllowedValues:
+      - false
+      - true
+    Default: true
+    ConstraintDescription: Must specify 'true' or 'false'
+
+  AvailabilityZones:
+    Description: The list of Availability Zones to use for the subnets in the VPC. Select 'two' Availability Zones from your list.
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+
+  DBInstanceClass:
+    Description: The compute and memory capacity of the DB instance, for example, db.m5.large.
+    Type: String
+    Default: db.r5.large
+
+  PerformanceInsightsRetentionPeriod:
+    Description: The amount of time, in days, to retain Performance Insights data. Valid values are 7 or 731 (2 years).
+    Type: Number
+    Default: 7
+
+  LambdaRuntimeEnv:
+    Description: Choose a runtime for Lambda Function/Layer.
+    Type: String
+    AllowedValues:
+      - Python
+      - Nodejs
+    Default: Nodejs
+
+  LocustAmiId:
+    Description: Latest Amazon Linux AMI Using Systems Manager Parameter Store.
+    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
+    Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
+
+  LocustInstanceType:
+    Description: The EC2 instance type for the Locust App.
+    Type: String
+    Default: c5.large
+
+  LocustVersion:
+    Description: Locust versin to deploy.
+    Type: String
+    Default: 1.2.3
+
+  LocustSecondaryInstanceCapacity:
+    Description: Run Locust load tests distributed across multiple machines.
+    Type: Number
+    Default: 2
+
+  ApiEndpointType:
+    Description: Amazon API Gateway endpoint types or its custom domain name. Valid values (EDGE, REGIONAL, PRIVATE)
+    Type: String
+    AllowedValues:
+      - EDGE
+      - REGIONAL
+      - PRIVATE
+    Default: PRIVATE
+
+  Environment:
+    Description: The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).
+    Type: String
+    AllowedValues:
+      - DEV
+      - TEST
+      - PROD
+    Default: DEV
+
+Mappings:
+  StackMap:
+    ProxyMap:
+      VPCCidr: 10.0.0.0/16
+      PublicSubnet1Cidr: 10.0.0.0/24
+      PublicSubnet2Cidr: 10.0.1.0/24
+      PrivateSubnet1Cidr: 10.0.2.0/24
+      PrivateSubnet2Cidr: 10.0.3.0/24
+      ResourceTags: rds-proxy
+      CreateRDSProxy: true
+    NoProxyMap:
+      VPCCidr: 10.1.0.0/16
+      PublicSubnet1Cidr: 10.1.0.0/24
+      PublicSubnet2Cidr: 10.1.1.0/24
+      PrivateSubnet1Cidr: 10.1.2.0/24
+      PrivateSubnet2Cidr: 10.1.3.0/24
+      ResourceTags: rds-no-proxy
+      CreateRDSProxy: false
+    LoadTestMap:
+      VPCCidr: 10.2.0.0/16
+      PublicSubnet1Cidr: 10.2.0.0/24
+      PublicSubnet2Cidr: 10.2.1.0/24
+      PrivateSubnet1Cidr: 10.2.2.0/24
+      PrivateSubnet2Cidr: 10.2.3.0/24
+      ResourceTags: rds-load-test
+
+Conditions:
+  IsLoadTest: !Equals [!Ref CreateLoadTest, true]
+
+  IsPython: !Equals [!Ref LambdaRuntimeEnv, Python]
+
+Resources:
+  ProxyVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: vpc.template
+      Parameters:
+        AvailabilityZones: !Join [',', !Ref AvailabilityZones]
+        VPCCidr: !FindInMap [StackMap, ProxyMap, VPCCidr]
+        PublicSubnet1Cidr: !FindInMap [StackMap, ProxyMap, PublicSubnet1Cidr]
+        PublicSubnet2Cidr: !FindInMap [StackMap, ProxyMap, PublicSubnet2Cidr]
+        PrivateSubnet1Cidr: !FindInMap [StackMap, ProxyMap, PrivateSubnet1Cidr]
+        PrivateSubnet2Cidr: !FindInMap [StackMap, ProxyMap, PrivateSubnet2Cidr]
+        ResourceTags: !FindInMap [StackMap, ProxyMap, ResourceTags]
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+
+  NoProxyVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: vpc.template
+      Parameters:
+        AvailabilityZones: !Join
+          - ','
+          - !Ref AvailabilityZones
+        VPCCidr: !FindInMap [StackMap, NoProxyMap, VPCCidr]
+        PublicSubnet1Cidr: !FindInMap [StackMap, NoProxyMap, PublicSubnet1Cidr]
+        PublicSubnet2Cidr: !FindInMap [StackMap, NoProxyMap, PublicSubnet2Cidr]
+        PrivateSubnet1Cidr: !FindInMap [StackMap, NoProxyMap, PrivateSubnet1Cidr]
+        PrivateSubnet2Cidr: !FindInMap [StackMap, NoProxyMap, PrivateSubnet2Cidr]
+        ResourceTags: !FindInMap [StackMap, NoProxyMap, ResourceTags]
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  LoadTestVPCStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: vpc.template
+      Parameters:
+        AvailabilityZones: !Join
+          - ','
+          - !Ref AvailabilityZones
+        VPCCidr: !FindInMap [StackMap, LoadTestMap, VPCCidr]
+        PublicSubnet1Cidr: !FindInMap [StackMap, LoadTestMap, PublicSubnet1Cidr]
+        PublicSubnet2Cidr: !FindInMap [StackMap, LoadTestMap, PublicSubnet2Cidr]
+        PrivateSubnet1Cidr: !FindInMap [StackMap, LoadTestMap, PrivateSubnet1Cidr]
+        PrivateSubnet2Cidr: !FindInMap [StackMap, LoadTestMap, PrivateSubnet2Cidr]
+        ResourceTags: !FindInMap [StackMap, LoadTestMap, ResourceTags]
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  ProxyRDSStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: rds.template
+      Parameters:
+        AvailabilityZones: !Join
+          - ','
+          - !Ref AvailabilityZones
+        VpcID: !GetAtt ProxyVPCStack.Outputs.VpcID
+        PrivateSubnet1: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet2
+        DBInstanceClass: !Ref DBInstanceClass
+        PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
+        CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+
+  NoProxyRDSStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: rds.template
+      Parameters:
+        AvailabilityZones: !Join
+          - ','
+          - !Ref AvailabilityZones
+        VpcID: !GetAtt NoProxyVPCStack.Outputs.VpcID
+        PrivateSubnet1: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet2
+        DBInstanceClass: !Ref DBInstanceClass
+        PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
+        CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  ProxyLayerVersionStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: lambda-layer.template
+      Parameters:
+        LambdaRuntimeEnv: !Ref LambdaRuntimeEnv
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+
+  NoProxyLayerVersionStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: lambda-layer.template
+      Parameters:
+        LambdaRuntimeEnv: !Ref LambdaRuntimeEnv
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  ProxyLambdaAccessStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: access-function.template
+      Parameters:
+        VpcID: !GetAtt ProxyVPCStack.Outputs.VpcID
+        PrivateSubnet1: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet2
+        LambdaRuntimeEnv: !Ref LambdaRuntimeEnv
+        LayerVersionArn: !If
+          - IsPython
+          - !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
+          - !GetAtt ProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
+        Endpoint: !GetAtt ProxyRDSStack.Outputs.ProxyEndpoint
+        RDSSecurityGroup: !GetAtt ProxyRDSStack.Outputs.RDSSecurityGroup
+        ProxySecurityGroup: !GetAtt ProxyRDSStack.Outputs.ProxySecurityGroup
+        CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+
+  NoProxyLambdaAccessStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: access-function.template
+      Parameters:
+        VpcID: !GetAtt NoProxyVPCStack.Outputs.VpcID
+        PrivateSubnet1: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet2
+        LambdaRuntimeEnv: !Ref LambdaRuntimeEnv
+        LayerVersionArn: !If
+          - IsPython
+          - !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
+          - !GetAtt NoProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
+        Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpoint
+        RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
+        ProxySecurityGroup: NA
+        CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  ProxyAddUsersStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: add-users.template
+      Parameters:
+        VpcID: !GetAtt ProxyVPCStack.Outputs.VpcID
+        PrivateSubnet1: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet2
+        LayerVersionArn: !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
+        Endpoint: !GetAtt ProxyRDSStack.Outputs.ClusterEndpoint
+        RDSSecurityGroup: !GetAtt ProxyRDSStack.Outputs.RDSSecurityGroup
+        CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
+        ProxySecurityGroup: !GetAtt ProxyRDSStack.Outputs.ProxySecurityGroup
+        DBSecretArn: !GetAtt ProxyRDSStack.Outputs.DBSecret
+        DBProxyName: !GetAtt ProxyRDSStack.Outputs.DBProxyName
+        DBProxyArn: !GetAtt ProxyRDSStack.Outputs.DBProxyArn
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  NoProxyAddUsersStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: add-users.template
+      Parameters:
+        VpcID: !GetAtt NoProxyVPCStack.Outputs.VpcID
+        PrivateSubnet1: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet2
+        LayerVersionArn: !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
+        Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpoint
+        RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
+        ProxySecurityGroup: NA
+        CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
+        DBSecretArn: !GetAtt NoProxyRDSStack.Outputs.DBSecret
+        DBProxyName: NA
+        DBProxyArn: NA
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  DashboardStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: dashboard.template
+      Parameters:
+        ProxyAccessLambda: !If
+          - IsPython
+          - !GetAtt ProxyLambdaAccessStack.Outputs.PythonLambdaFunction
+          - !GetAtt ProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+        NoProxyAccessLambda: !If
+          - IsPython
+          - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
+          - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+        ProxyInstanceName: !GetAtt ProxyRDSStack.Outputs.DBInstanceName
+        NoProxyInstanceName: !GetAtt NoProxyRDSStack.Outputs.DBInstanceName
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  LocustStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: ec2.template
+      Parameters:
+        VpcID: !GetAtt LoadTestVPCStack.Outputs.VpcID
+        SubnetID: !GetAtt LoadTestVPCStack.Outputs.PublicSubnet1
+        InstanceAMI: !Ref LocustAmiId
+        InstanceType: !Ref LocustInstanceType
+        LocustVersion: !Ref LocustVersion
+        SecondaryInstanceCapacity: !Ref LocustSecondaryInstanceCapacity
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+  ApiStack:
+    Type: AWS::CloudFormation::Stack
+    Properties:
+      TemplateURL: api.template
+      Parameters:
+        VpcCidrBlock: !GetAtt LoadTestVPCStack.Outputs.VpcCidrBlock
+        VpcID: !GetAtt LoadTestVPCStack.Outputs.VpcID
+        PrivateSubnet1: !GetAtt LoadTestVPCStack.Outputs.PrivateSubnet1
+        PrivateSubnet2: !GetAtt LoadTestVPCStack.Outputs.PrivateSubnet2
+        ProxyAccessLambda: !If
+          - IsPython
+          - !GetAtt ProxyLambdaAccessStack.Outputs.PythonLambdaFunction
+          - !GetAtt ProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+        NoProxyAccessLambda: !If
+          - IsPython
+          - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
+          - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+        ApiEndpointType: !Ref ApiEndpointType
+      Tags:
+        - Key: Project
+          Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]
+        - Key: Environment
+          Value: !Ref Environment
+    Condition: IsLoadTest
+
+Outputs:
+  LocustAddress:
+    Description: The address of the Locust primary instance.
+    Value: !GetAtt LocustStack.Outputs.LocustAddress
+    Condition: IsLoadTest
+
+  ApiGatewayURL:
+    Description: URL of the API Gateway.
+    Value: !GetAtt ApiStack.Outputs.ApiGatewayURL
+    Condition: IsLoadTest
+
+  ProxyLambdaName:
+    Description: Proxy tenant data access lambda function.
+    Value: !If
+      - IsPython
+      - !GetAtt ProxyLambdaAccessStack.Outputs.PythonLambdaFunction
+      - !GetAtt ProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+
+  NoProxyLambdaName:
+    Description: NoProxy tenant data access lambda function.
+    Value: !If
+      - IsPython
+      - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
+      - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+    Condition: IsLoadTest
+
+  ProxyDB:
+    Description: Proxy database instance.
+    Value: !GetAtt ProxyRDSStack.Outputs.DBInstanceName
+
+  NoProxyDB:
+    Description: NoProxy database instance.
+    Value: !GetAtt NoProxyRDSStack.Outputs.DBInstanceName
+    Condition: IsLoadTest
+
+  DashboardName:
+    Description: CLoudWatch dashboard.
+    Value: !GetAtt DashboardStack.Outputs.LoadTestDashboard
+    Condition: IsLoadTest

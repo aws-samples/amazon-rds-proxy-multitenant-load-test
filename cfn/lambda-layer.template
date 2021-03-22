@@ -1,0 +1,46 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Creates a Lambda LayerVersion that contains library or runtime code needed by a Lambda Function.
+
+Parameters:
+  LambdaRuntimeEnv:
+    Type: String
+
+Conditions:
+  IsNodeJs: !Equals [!Ref LambdaRuntimeEnv, Nodejs]
+
+Transform: AWS::Serverless-2016-10-31
+
+Resources:
+  PythonLibrary:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub ${AWS::StackName}
+      Description: Dependencies for the python sample functions.
+      ContentUri: ../src/layers/python/.
+      CompatibleRuntimes:
+        - python3.8
+        - python3.7
+        - python3.6
+      RetentionPolicy: Delete
+
+  NodeJsLibrary:
+    Type: AWS::Serverless::LayerVersion
+    Properties:
+      LayerName: !Sub ${AWS::StackName}
+      Description: aws-sdk/mysql2
+      ContentUri: ../src/layers/nodejs/.
+      CompatibleRuntimes:
+        - nodejs14.x
+        - nodejs12.x
+        - nodejs10.x
+      RetentionPolicy: Delete
+    Condition: IsNodeJs
+
+Outputs:
+  PythonLambdaLayer:
+    Value: !Ref PythonLibrary
+
+  NodeJsLambdaLayer:
+    Value: !Ref NodeJsLibrary
+    Condition: IsNodeJs

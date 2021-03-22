@@ -1,0 +1,208 @@
+AWSTemplateFormatVersion: "2010-09-09"
+
+Description: Provides RDS configuration.
+
+Parameters:
+  AvailabilityZones:
+    Type: List<AWS::EC2::AvailabilityZone::Name>
+
+  VpcID:
+    Type: AWS::EC2::VPC::Id
+
+  PrivateSubnet1:
+    Type: AWS::EC2::Subnet::Id
+
+  PrivateSubnet2:
+    Type: AWS::EC2::Subnet::Id
+
+  DBInstanceClass:
+    Type: String
+
+  PerformanceInsightsRetentionPeriod:
+    Type: Number
+
+  CreateRDSProxy:
+    Type: String
+
+Conditions:
+  IsRDSProxy: !Equals [!Ref CreateRDSProxy, true]
+
+Resources:
+  DBCluster:
+    Type: AWS::RDS::DBCluster
+    Properties:
+      AvailabilityZones:
+        - !Select [0, !Ref AvailabilityZones]
+        - !Select [1, !Ref AvailabilityZones]
+      DatabaseName: test2
+      DBClusterParameterGroupName: !Ref DBClusterParameterGroup
+      DBSubnetGroupName: !Ref DBSubnetGroup
+      EnableIAMDatabaseAuthentication: !If
+        - IsRDSProxy
+        - false
+        - true
+      Engine: aurora-mysql
+      MasterUsername: !Join
+        - ""
+        - - '{{resolve:secretsmanager:'
+          - !Ref DBSecret
+          - :SecretString:username::}}
+      MasterUserPassword: !Join
+        - ""
+        - - '{{resolve:secretsmanager:'
+          - !Ref DBSecret
+          - :SecretString:password::}}
+      VpcSecurityGroupIds:
+        - !Ref RDSSecurityGroup
+
+  DBClusterParameterGroup:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Properties:
+      Description: CloudFormation Sample Aurora Cluster Parameter Group
+      Family: aurora-mysql5.7
+      Parameters:
+        max_connections: "16000"
+        max_user_connections: "4294967295"
+
+  DBSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: CloudFormation Sample Aurora Subnet Group
+      SubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+
+  DBInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: !Ref DBInstanceClass
+      EnablePerformanceInsights: true
+      PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
+      DBClusterIdentifier: !Ref DBCluster
+      DBParameterGroupName: !Ref DBParameterGroup
+      Engine: aurora-mysql
+      PubliclyAccessible: false
+
+  DBParameterGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: CloudFormation Sample Aurora Parameter Group
+      Family: aurora-mysql5.7
+      Parameters:
+        max_connections: "16000"
+        max_user_connections: "4294967295"
+
+  DBSecret:
+    Type: AWS::SecretsManager::Secret
+    Properties:
+      GenerateSecretString:
+        ExcludePunctuation: true
+        GenerateStringKey: password
+        SecretStringTemplate: '{"username": "admin"}'
+
+  RDSSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: RDS Security Group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: !Ref VpcID
+
+  DBProxy:
+    Type: AWS::RDS::DBProxy
+    Properties:
+      Auth:
+        - AuthScheme: SECRETS
+          IAMAuth: REQUIRED
+          SecretArn: !Ref DBSecret
+      DBProxyName: proxy987123
+      EngineFamily: MYSQL
+      RoleArn: !GetAtt DBSecretsRole.Arn
+      VpcSubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      RequireTLS: true
+      VpcSecurityGroupIds:
+        - !Ref ProxySecurityGroup
+    Condition: IsRDSProxy
+
+  ProxySecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: RDS Proxy Security Group
+      SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all outbound traffic by default
+          IpProtocol: "-1"
+      VpcId: !Ref VpcID
+    Condition: IsRDSProxy
+
+  ProxyToRDSIngress:
+    Type: AWS::EC2::SecurityGroupIngress
+    Properties:
+      IpProtocol: tcp
+      Description: Proxy to RDS ingress rule
+      FromPort: 3306
+      GroupId: !Ref RDSSecurityGroup
+      SourceSecurityGroupId: !Ref ProxySecurityGroup
+      ToPort: 3306
+    Condition: IsRDSProxy
+
+  DBSecretsRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Statement:
+          - Action: sts:AssumeRole
+            Effect: Allow
+            Principal:
+              Service: rds.amazonaws.com
+        Version: "2012-10-17"
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+
+  DBProxyTargetGroup:
+    Type: AWS::RDS::DBProxyTargetGroup
+    DependsOn:
+      - DBInstance
+    Properties:
+      DBProxyName: !Ref DBProxy
+      TargetGroupName: default
+      ConnectionPoolConfigurationInfo:
+        ConnectionBorrowTimeout: 120
+        MaxConnectionsPercent: 90
+        MaxIdleConnectionsPercent: 50
+      DBClusterIdentifiers:
+        - !Ref DBCluster
+    Condition: IsRDSProxy
+
+Outputs:
+  RDSSecurityGroup:
+    Value: !Ref RDSSecurityGroup
+
+  ProxySecurityGroup:
+    Value: !Ref ProxySecurityGroup
+    Condition: IsRDSProxy
+
+  ClusterEndpoint:
+    Value: !GetAtt DBCluster.Endpoint.Address
+
+  ProxyEndpoint:
+    Value: !GetAtt DBProxy.Endpoint
+    Condition: IsRDSProxy
+
+  DBSecret:
+    Value: !Ref DBSecret
+
+  DBProxyName:
+    Value: !Ref DBProxy
+    Condition: IsRDSProxy
+
+  DBProxyArn:
+    Value: !GetAtt DBProxy.DBProxyArn
+    Condition: IsRDSProxy
+
+  DBInstanceName:
+    Value: !Ref DBInstance
