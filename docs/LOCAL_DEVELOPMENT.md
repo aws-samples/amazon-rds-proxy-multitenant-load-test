@@ -8,6 +8,8 @@ The following dependencies must be installed:
 - Python >=3.8 and pip
 - virtualenv
 - nodejs
+- ruby >=2.6 and gem
+- [cfn-nag](https://github.com/stelligent/cfn_nag)
 
 ### Build local development environment
 
