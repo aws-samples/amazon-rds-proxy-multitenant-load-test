@@ -1,5 +1,7 @@
 ## Amazon RDS Proxy MySQL Multi-Tenant Load Test
 
+<img src="https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Unit%20Tests/badge.svg">
+
 #### Database migration from a simulated on-premises MS SQL Server to an Amazon RDS instance in AWS Cloud
 
 An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL clusters, one with and one without Amazon RDS Proxy. This is repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy
