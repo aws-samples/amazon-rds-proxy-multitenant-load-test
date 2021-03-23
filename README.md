@@ -1,6 +1,7 @@
 ## Amazon RDS Proxy MySQL Multi-Tenant Load Test
 
-<img src="https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Unit%20Tests/badge.svg">
+[![Publish Version](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Unit%20Tests/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
+[![Unit Tests](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Unit%20Tests/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
 
 #### Database migration from a simulated on-premises MS SQL Server to an Amazon RDS instance in AWS Cloud
 
