@@ -1,3 +1,4 @@
 awscli
 bump2version
+cfn_lint
 pre-commit
