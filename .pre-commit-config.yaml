@@ -55,7 +55,7 @@ repos:
     language: ruby
     entry: cfn_nag_scan
     files: cfn/.*\.(template|json|yml|yaml)$
-    args: [--input-path]
+    args: [--fail-on-warnings, --input-path]
 
 # Python
 - repo: https://github.com/pycqa/pylint
