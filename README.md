@@ -31,19 +31,19 @@ You are responsible for the cost of the AWS services used while running this sam
 
 |Region|Launch Template|
 |------|---------------|
-|**US East (N. Virginia)** (us-east-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-us-east-1/aws-dms-sql-server/latest/main.template)|
-|**US East (Ohio)** (us-east-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-us-west-2/aws-dms-sql-server/latest/main.template)|
-|**US West (N. California)** (us-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-1/aws-dms-sql-server/latest/main.template)|
-|**US West (Oregon)** (us-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-2/aws-dms-sql-server/latest/main.template)|
-|**Asia Pacific (Mumbai)** (ap-south-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-eu-central-1/aws-dms-sql-server/latest/main.template)|
-|**Asia Pacific (Seoul)** (ap-northeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
-|**Asia Pacific (Singapore)** (ap-southeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
-|**Asia Pacific (Sydney)** (ap-southeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
-|**Asia Pacific (Tokyo)** (ap-northeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
-|**Canada (Central)** (ca-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
-|**Europe (Frankfurt)** (eu-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
-|**Europe (Ireland)** (eu-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
-|**Europe (London)** (eu-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=aws-dms-sql-server&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/aws-dms-sql-server/latest/main.template)|
+|**US East (N. Virginia)** (us-east-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-east-1/rds-proxy-load-test/latest/main.template)|
+|**US East (Ohio)** (us-east-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-west-2/rds-proxy-load-test/latest/main.template)|
+|**US West (N. California)** (us-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-1/rds-proxy-load-test/latest/main.template)|
+|**US West (Oregon)** (us-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-2/rds-proxy-load-test/latest/main.template)|
+|**Asia Pacific (Mumbai)** (ap-south-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-central-1/rds-proxy-load-test/latest/main.template)|
+|**Asia Pacific (Seoul)** (ap-northeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
+|**Asia Pacific (Singapore)** (ap-southeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
+|**Asia Pacific (Sydney)** (ap-southeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
+|**Asia Pacific (Tokyo)** (ap-northeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
+|**Canada (Central)** (ca-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
+|**Europe (Frankfurt)** (eu-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
+|**Europe (Ireland)** (eu-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
+|**Europe (London)** (eu-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/rds-proxy-load-test/latest/main.template)|
 
 2. If prompted, login using your AWS account credentials.
 1. You should see a screen titled "*Create Stack*" at the "*Specify template*" step. The fields specifying the CloudFormation
@@ -52,17 +52,18 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 
 |Parameter label|Default|Description|
 |---------------|-------|-----------|
-|Availability Zones|Requires input|The list of Availability Zones to use for the subnets in the VPCs. *Use two AZs*.|
-|RDS Instance Class|db.r5.large|Instance class of RDS instance.|
-|Performance Insights Retention Period|7|Number of days, to retain Amazon RDS Performance Insights data for both clusters. Values are 7 to 731 (2 years).|
-|Lambda Runtime Environment|Node.js|The runtime for the AWS Lambda Function that access the database data.|
-|Environment|DEV|The environment to tag your infrastructure. Should be either DEV, TEST, or PROD.|
-|Create Load Test Stack|true|Whether to also deploy VPCs B and C in the above diagram, that load tests the RDS Proxy architecture with a No Proxy alternative.|
-|Latest Amazon Linux AMI|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|Latest Amazon Linux AMI, using Systems Manager Parameter Store
-|Locust instance type|c5.large|The EC2 instance type for Locust load testing.|
-|Locust App Version|1.2.3|The version of Locust installed on the EC2 instances.|
-|Locust Worker Instances|2|Number of worker nodes, minimum is 2.|
-|API Gateway Endpoint Type|PRIVATE|Set to either EDGE, REGIONAL, or PRIVATE.|
+|CreateLoadTest|true|Should the CloudFormation create a Load Test stack. Load test stack will be created, if set to 'true'.|
+|AvailabilityZones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select 'two' Availability Zones from your list.|
+|DBInstanceClass|db.r5.large|The compute and memory capacity of the DB instance, for example, db.m5.large.|
+|PerformanceInsightsRetentionPeriod|7|The amount of time, in days, to retain Performance Insights data. Valid values are 7 or 731 (2 years).|
+|LambdaRuntimeEnv|Node.js|Choose a runtime for Lambda Function/Layer.|
+|LocustAmiId|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|Latest Amazon Linux AMI Using Systems Manager Parameter Store.|
+|LocustInstanceType|c5.large|The EC2 instance type for the Locust App.|
+|LocustVersion|1.2.3|Locust version to deploy.|
+|LocustSecondaryInstanceCapacity|2|Run Locust load tests distributed across multiple machines.|
+|ApiEndpointType|PRIVATE|Amazon API Gateway endpoint types or its custom domain name. Valid values (EDGE, REGIONAL, PRIVATE).|
+|OnPremIp|0.0.0.0/0|CIDR block of an on-premise IP address.|
+|Environment|DEV|The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).|
 
    When completed, click *Next*
 1. [Configure stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html) if desired, then click *Next*.
