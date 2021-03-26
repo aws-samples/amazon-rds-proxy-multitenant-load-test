@@ -84,7 +84,7 @@ test-cfn-lint:
 	cfn-lint cfn/*.template
 
 test-cfn-nag:
-	cfn_nag_scan --input-path cfn/*.template
+	cfn_nag_scan --input-path cfn
 
 version:
 	@bumpversion --dry-run --list cfn/main.template | grep current_version | sed s/'^.*='//
