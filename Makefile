@@ -79,12 +79,13 @@ venv/bin/activate: requirements.txt
 
 test:
 	pre-commit run --all-files
+	make test-cfn-nag
 
 test-cfn-lint:
 	cfn-lint cfn/*.template
 
 test-cfn-nag:
-	cfn_nag_scan --input-path cfn
+	cfn_nag_scan --input-path cfn --blacklist-path ci/cfn_nag_blocklist.yaml
 
 version:
 	@bumpversion --dry-run --list cfn/main.template | grep current_version | sed s/'^.*='//
