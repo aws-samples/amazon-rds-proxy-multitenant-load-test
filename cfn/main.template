@@ -96,7 +96,7 @@ Parameters:
     Default: c5.large
 
   LocustVersion:
-    Description: Locust versin to deploy.
+    Description: Locust version to deploy.
     Type: String
     Default: 1.2.3
 
@@ -106,7 +106,7 @@ Parameters:
     Default: 2
 
   ApiEndpointType:
-    Description: Amazon API Gateway endpoint types or its custom domain name. Valid values (EDGE, REGIONAL, PRIVATE)
+    Description: Amazon API Gateway endpoint types or its custom domain name. Valid values (EDGE, REGIONAL, PRIVATE).
     Type: String
     AllowedValues:
       - EDGE
