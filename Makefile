@@ -79,7 +79,6 @@ venv/bin/activate: requirements.txt
 
 test:
 	pre-commit run --all-files
-	make test-cfn-nag
 
 test-cfn-lint:
 	cfn-lint cfn/*.template
