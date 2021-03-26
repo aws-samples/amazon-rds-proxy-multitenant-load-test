@@ -89,6 +89,11 @@ To remove the stack:
 1. Your stack will take some time to be deleted. You can track its progress in the "Events" tab.
 1. When it is done, the status will change from "DELETE_IN_PROGRESS" to "DELETE_COMPLETE". It will then disappear from the list.
 
+## Limitations
+Please note, that this solution is not suitable for testing of production workloads. You should always test in suitable environment build for testing.
+
+For purpose of load test demonstration, RDS databases created by this solution, are not encrypted at rest. For a documentation on how to enable encryption of the RDS database, [follow this link](https://docs.amazonaws.cn/en_us/AmazonRDS/latest/UserGuide/Overview.Encryption.html).
+
 ## Contributing
 
 Contributions are more than welcome. Please read the [code of conduct](CODE_OF_CONDUCT.md) and the [contributing guidelines](CONTRIBUTING.md).

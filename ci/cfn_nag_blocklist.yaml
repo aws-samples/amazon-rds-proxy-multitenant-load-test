@@ -2,5 +2,5 @@ RulesToSuppress:
 - id: F26
   reason: >
     RDS DBCluster should have StorageEncrypted enabled, however this breaks the load test.
-    For additional DB protection turn the encryption. See the documentation at
+    For additional DB protection turn the encryption on. See the documentation at
     https://docs.amazonaws.cn/en_us/AmazonRDS/latest/UserGuide/Overview.Encryption.html
