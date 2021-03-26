@@ -48,15 +48,6 @@ repos:
   - id: cfn-format
     files: \.template$
 
-- repo: local
-  hooks:
-  - id: cfn-nag
-    name: cfn-nag
-    language: ruby
-    entry: cfn_nag_scan
-    files: cfn/.*\.(template|json|yml|yaml)$
-    args: [--input-path]
-
 # Python
 - repo: https://github.com/pycqa/pylint
   rev: pylint-2.6.0
