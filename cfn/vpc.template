@@ -232,7 +232,7 @@ Resources:
             Action: sts:AssumeRole
       Path: /
       Policies:
-        - PolicyName: cloudwatchlogsrole
+        - PolicyName: flow-logs-role
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
@@ -243,7 +243,7 @@ Resources:
                   - logs:DescribeLogGroups
                   - logs:DescribeLogStreams
                 Effect: Allow
-                Resource: arn:aws:logs:*:*:*
+                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FlowLogsGroup}:*
     Condition: IsFlowLogs
 
   FlowLogs:
