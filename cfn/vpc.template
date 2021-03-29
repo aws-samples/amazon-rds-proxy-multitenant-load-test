@@ -57,7 +57,7 @@ Resources:
       CidrBlock: !Ref PublicSubnet1Cidr
       VpcId: !Ref VPC
       AvailabilityZone: !Select [0, !Ref AvailabilityZones]
-      MapPublicIpOnLaunch: true
+      MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
           Value: !Join [/, [!Ref ResourceTags, PublicSubnet1]]
@@ -108,7 +108,7 @@ Resources:
       CidrBlock: !Ref PublicSubnet2Cidr
       VpcId: !Ref VPC
       AvailabilityZone: !Select [1, !Ref AvailabilityZones]
-      MapPublicIpOnLaunch: true
+      MapPublicIpOnLaunch: false
       Tags:
         - Key: Name
           Value: !Join [/, [!Ref ResourceTags, PublicSubnet2]]

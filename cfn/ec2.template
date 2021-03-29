@@ -185,6 +185,15 @@ Resources:
           # Call cfn-signal script to send a signal with exit code
           /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource PrimaryInstance --region ${AWS::Region}
 
+  PrimaryInstanceEIP:
+    Type: AWS::EC2::EIP
+    Properties:
+      Domain: vpc
+      InstanceId: !Ref PrimaryInstance
+      Tags:
+        - Key: Name
+          Value: locust-primary-eip
+
   SecondaryInstanceLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
     Metadata:
