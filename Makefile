@@ -85,7 +85,7 @@ test-cfn-lint:
 	cfn-lint cfn/*.template
 
 test-cfn-nag:
-	cfn_nag_scan --input-path cfn --blacklist-path ci/cfn_nag_blocklist.yaml
+	cfn_nag_scan --input-path cfn #--blacklist-path ci/cfn_nag_blocklist.yaml
 
 version:
 	@bumpversion --dry-run --list cfn/main.template | grep current_version | sed s/'^.*='//
