@@ -1,0 +1,12 @@
+RulesToSuppress:
+- id: W77
+  reason: >
+    Secrets Manager Secrets are encrypted by default. However, utilizing KMS CMKs gives you
+    more control over key rotation and provides auditing visibility into key usage.
+    AWS KMS CMK keys are subject to additional costs per key/request.
+
+- id: W84
+  reason: >
+    CloudWatch log groups are encrypted by default. However, utilizing KMS CMKs gives you
+    more control over key rotation and provides auditing visibility into key usage.
+    AWS KMS CMK keys are subject to additional costs per key/request.
