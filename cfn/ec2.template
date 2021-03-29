@@ -168,8 +168,6 @@ Resources:
       IamInstanceProfile: !Ref PrimaryInstanceProfile
       ImageId: !Ref InstanceAMI
       InstanceType: !Ref InstanceType
-      SecurityGroupIds:
-        - !Ref PrimarySecurityGroup
       NetworkInterfaces:
         - AssociatePublicIpAddress: true
           DeviceIndex: "0"
@@ -271,8 +269,12 @@ Resources:
         IamInstanceProfile:
           Name: !Ref SecondaryInstanceProfile
         ImageId: !Ref InstanceAMI
-        SecurityGroupIds:
-          - !Ref SecondarySecurityGroup
+        NetworkInterfaces:
+          - AssociatePublicIpAddress: true
+            DeviceIndex: 0
+            Groups:
+              - !Ref SecondarySecurityGroup
+            SubnetId: !Ref SubnetID
         TagSpecifications:
           - ResourceType: instance
             Tags:
