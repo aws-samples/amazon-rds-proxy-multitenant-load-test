@@ -39,7 +39,8 @@ deploy: package
 	  --parameter-overrides \
 	  	CreateLoadTest=$(LOAD_TEST) \
 	  	AvailabilityZones=$(AWS_REGION)a,$(AWS_REGION)b \
-	  	LambdaRuntimeEnv=$(LAMBDA_RUNTIME_ENV)
+	  	LambdaRuntimeEnv=$(LAMBDA_RUNTIME_ENV) \
+	  	EnableFlowLogs=$(ENABLE_FLOW_LOGS)
 
 package: build
 	@printf "\n--> Packaging and uploading templates to the %s S3 bucket ...\n" $(BUCKET_NAME)

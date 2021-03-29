@@ -170,7 +170,12 @@ Resources:
       InstanceType: !Ref InstanceType
       SecurityGroupIds:
         - !Ref PrimarySecurityGroup
-      SubnetId: !Ref SubnetID
+      NetworkInterfaces:
+        - AssociatePublicIpAddress: true
+          DeviceIndex: "0"
+          GroupSet:
+            - !Ref PrimarySecurityGroup
+          SubnetId: !Ref SubnetID
       Tags:
         - Key: Name
           Value: locust-primary
@@ -184,15 +189,6 @@ Resources:
           /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource PrimaryInstance --configsets app_install --region ${AWS::Region}
           # Call cfn-signal script to send a signal with exit code
           /opt/aws/bin/cfn-signal --exit-code $? --stack ${AWS::StackName} --resource PrimaryInstance --region ${AWS::Region}
-
-  PrimaryInstanceEIP:
-    Type: AWS::EC2::EIP
-    Properties:
-      Domain: vpc
-      InstanceId: !Ref PrimaryInstance
-      Tags:
-        - Key: Name
-          Value: locust-primary-eip
 
   SecondaryInstanceLaunchTemplate:
     Type: AWS::EC2::LaunchTemplate
