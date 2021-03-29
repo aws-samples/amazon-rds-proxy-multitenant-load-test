@@ -96,7 +96,7 @@ Resources:
   DBSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
-      KmsKeyId: aws/secretsmanager
+      KmsKeyId: alias/aws/secretsmanager
       GenerateSecretString:
         ExcludePunctuation: true
         GenerateStringKey: password
