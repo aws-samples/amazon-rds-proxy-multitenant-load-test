@@ -31,11 +31,23 @@ Resources:
       GroupDescription: loadtest/primarySecurityGroup
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
+          Description: Allow all https outbound traffic
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all http outbound traffic
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all dns outbound traffic
+          IpProtocol: tcp
+          FromPort: 51
+          ToPort: 51
       SecurityGroupIngress:
         - CidrIp: !Ref OnPremIp
-          Description: allow locust port
+          Description: Allow http inboud traffic
           FromPort: 80
           IpProtocol: tcp
           ToPort: 80
@@ -46,19 +58,41 @@ Resources:
     Properties:
       GroupDescription: loadtest/secondarySecurityGroup
       SecurityGroupEgress:
+        - DestinationSecurityGroupId: !Ref PrimarySecurityGroup
+          Description: Allow outbound traffic to primary node
+          IpProtocol: tcp
+          FromPort: 5557
+          ToPort: 5557
         - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
+          Description: Allow all https outbound traffic
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - CidrIp: 0.0.0.0/0
+          Description: Allow all http outbound traffic
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
       VpcId: !Ref VpcID
 
   PrimarySecurityGroupFromSecondarySecurityGroup:
     Type: AWS::EC2::SecurityGroupIngress
     Properties:
       IpProtocol: tcp
-      Description: allow secondary connection
+      Description: Allow inbound connection to primary node
       FromPort: 5557
       GroupId: !Ref PrimarySecurityGroup
       SourceSecurityGroupId: !Ref SecondarySecurityGroup
+      ToPort: 5557
+
+  PrimarySecurityGroupToSecondarySecurityGroup:
+    Type: AWS::EC2::SecurityGroupEgress
+    Properties:
+      IpProtocol: tcp
+      Description: Allow outbound connection to secondary node
+      FromPort: 5557
+      GroupId: !Ref PrimarySecurityGroup
+      DestinationSecurityGroupId: !Ref SecondarySecurityGroup
       ToPort: 5557
 
   LoadTestRole:
