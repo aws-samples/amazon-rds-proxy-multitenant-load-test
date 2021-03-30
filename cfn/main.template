@@ -18,6 +18,7 @@ Metadata:
           - PerformanceInsightsRetentionPeriod
           - LambdaRuntimeEnv
           - Environment
+          - EnableFlowLogs
       - Label:
           default: Load test configuration
         Parameters:
@@ -51,7 +52,10 @@ Metadata:
         deafult: Locust Worker Instances
       ApiEndpointType:
         default: API Endpoint Type
-      OnPremIp: ISP/Public IPv4
+      OnPremIp:
+        default: ISP/Public IPv4
+      EnableFlowLogs:
+        default: Flow Logs
 
 Parameters:
   CreateLoadTest:
@@ -130,6 +134,14 @@ Parameters:
       - PROD
     Default: DEV
 
+  EnableFlowLogs:
+    Description: Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.
+    Type: String
+    AllowedValues:
+      - true
+      - false
+    Default: false
+
 Mappings:
   StackMap:
     ProxyMap:
@@ -174,6 +186,7 @@ Resources:
         PrivateSubnet1Cidr: !FindInMap [StackMap, ProxyMap, PrivateSubnet1Cidr]
         PrivateSubnet2Cidr: !FindInMap [StackMap, ProxyMap, PrivateSubnet2Cidr]
         ResourceTags: !FindInMap [StackMap, ProxyMap, ResourceTags]
+        EnableFlowLogs: !Ref EnableFlowLogs
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
@@ -194,6 +207,7 @@ Resources:
         PrivateSubnet1Cidr: !FindInMap [StackMap, NoProxyMap, PrivateSubnet1Cidr]
         PrivateSubnet2Cidr: !FindInMap [StackMap, NoProxyMap, PrivateSubnet2Cidr]
         ResourceTags: !FindInMap [StackMap, NoProxyMap, ResourceTags]
+        EnableFlowLogs: !Ref EnableFlowLogs
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
@@ -215,6 +229,7 @@ Resources:
         PrivateSubnet1Cidr: !FindInMap [StackMap, LoadTestMap, PrivateSubnet1Cidr]
         PrivateSubnet2Cidr: !FindInMap [StackMap, LoadTestMap, PrivateSubnet2Cidr]
         ResourceTags: !FindInMap [StackMap, LoadTestMap, ResourceTags]
+        EnableFlowLogs: !Ref EnableFlowLogs
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]

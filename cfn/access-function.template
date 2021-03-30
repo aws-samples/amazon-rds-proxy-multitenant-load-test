@@ -142,7 +142,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
         - arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole
         - arn:aws:iam::aws:policy/service-role/AWSLambdaVPCAccessExecutionRole
-        - arn:aws:iam::aws:policy/AWSLambdaReadOnlyAccess
+        - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
 
   STSRole:
     Type: AWS::IAM::Role

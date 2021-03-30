@@ -39,7 +39,8 @@ deploy: package
 	  --parameter-overrides \
 	  	CreateLoadTest=$(LOAD_TEST) \
 	  	AvailabilityZones=$(AWS_REGION)a,$(AWS_REGION)b \
-	  	LambdaRuntimeEnv=$(LAMBDA_RUNTIME_ENV)
+	  	LambdaRuntimeEnv=$(LAMBDA_RUNTIME_ENV) \
+	  	EnableFlowLogs=$(ENABLE_FLOW_LOGS)
 
 package: build
 	@printf "\n--> Packaging and uploading templates to the %s S3 bucket ...\n" $(BUCKET_NAME)
@@ -84,7 +85,7 @@ test-cfn-lint:
 	cfn-lint cfn/*.template
 
 test-cfn-nag:
-	cfn_nag_scan --input-path cfn
+	cfn_nag_scan --input-path cfn #--blacklist-path ci/cfn_nag_blocklist.yaml
 
 version:
 	@bumpversion --dry-run --list cfn/main.template | grep current_version | sed s/'^.*='//

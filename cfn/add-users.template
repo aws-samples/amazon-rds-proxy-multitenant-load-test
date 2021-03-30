@@ -69,7 +69,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
         - AWSLambdaBasicExecutionRole
         - AWSLambdaVPCAccessExecutionRole
-        - AWSLambdaReadOnlyAccess
+        - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
         - SecretsManagerReadWrite
         - Version: "2012-10-17"
           Statement:
@@ -118,7 +118,7 @@ Resources:
         - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
         - AWSLambdaBasicExecutionRole
         - AWSLambdaVPCAccessExecutionRole
-        - AWSLambdaReadOnlyAccess
+        - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
         - SecretsManagerReadWrite
       Runtime: python3.8
       Timeout: 900
