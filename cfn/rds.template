@@ -135,9 +135,11 @@ Resources:
     Properties:
       GroupDescription: RDS Proxy Security Group
       SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
+        - DestinationSecurityGroupId: !Ref RDSSecurityGroup
+          Description: Allow db outbound traffic
+          IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
       VpcId: !Ref VpcID
     Condition: IsRDSProxy
 
