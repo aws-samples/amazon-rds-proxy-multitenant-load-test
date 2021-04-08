@@ -40,11 +40,16 @@ Resources:
           IpProtocol: tcp
           FromPort: 80
           ToPort: 80
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all dns outbound traffic
+        - CidrIp: 169.254.169.253/32
+          Description: Allow dns outbound traffic to Amazon provided DNS server
           IpProtocol: tcp
-          FromPort: 51
-          ToPort: 51
+          FromPort: 53
+          ToPort: 53
+        - CidrIp: 169.254.169.253/32
+          Description: Allow dns outbound traffic to Amazon provided DNS server
+          IpProtocol: udp
+          FromPort: 53
+          ToPort: 53
       SecurityGroupIngress:
         - CidrIp: !Ref OnPremIp
           Description: Allow http inboud traffic
