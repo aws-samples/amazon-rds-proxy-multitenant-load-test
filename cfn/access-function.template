@@ -102,8 +102,18 @@ Resources:
       GroupDescription: Lambda Security Group
       SecurityGroupEgress:
         - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
+          Description: Allow all https outbound traffic
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        - DestinationSecurityGroupId: !If
+            - IsRDSProxy
+            - !Ref ProxySecurityGroup
+            - !Ref RDSSecurityGroup
+          Description: Allow db outbound traffic
+          IpProtocol: tcp
+          FromPort: 3306
+          ToPort: 3306
       VpcId: !Ref VpcID
 
   LambdaToRDSIngress:

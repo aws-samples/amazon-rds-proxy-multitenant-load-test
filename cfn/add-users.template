@@ -48,7 +48,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../src/functions/proxy
-      Description: Tenant data access function.
+      Description: Tenant add data function.
       Environment:
         Variables:
           ENDPOINT: !Ref Endpoint
@@ -99,7 +99,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       CodeUri: ../src/functions/noproxy
-      Description: Tenant data access function.
+      Description: Tenant add data function.
       Environment:
         Variables:
           ENDPOINT: !Ref Endpoint
