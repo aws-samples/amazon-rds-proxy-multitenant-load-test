@@ -34,7 +34,7 @@ Parameters:
     Type: String
 
   ProxySecurityGroup:
-    Type: String # Has to be type String as NoProxy has '*' value
+    Type: String # Has to be type String as NoProxy has 'NA' value
 
 Conditions:
   IsRDSProxy: !Equals [!Ref CreateRDSProxy, true]
