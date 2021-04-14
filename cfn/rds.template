@@ -34,10 +34,10 @@ Resources:
       AvailabilityZones:
         - !Select [0, !Ref AvailabilityZones]
         - !Select [1, !Ref AvailabilityZones]
-      DatabaseName: test2
+      DatabaseName: main
       DBClusterParameterGroupName: !Ref DBClusterParameterGroup
       DBSubnetGroupName: !Ref DBSubnetGroup
-      StorageEncrypted: false
+      StorageEncrypted: true
       EnableIAMDatabaseAuthentication: !If
         - IsRDSProxy
         - false

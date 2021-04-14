@@ -1,6 +1,6 @@
-// Access layer, no proxy
+// Access layer
 const mysql = require('mysql2/promise');
-require('tls').DEFAULT_MIN_VERSION = 'TLSv1'; //enables TLS 1.0 rather than TLS 1.2 (which is not supported my the MySQL Aurora 5.6)
+require('tls').DEFAULT_MIN_VERSION = 'TLSv1';
 var user_name = 'user';
 var database_name = 'user_database';
 var AWS = require('aws-sdk');
@@ -28,12 +28,10 @@ exports.handler = async (event) => {
     // var database = 'user_database100';
 
     // Resource name
-    //   var resource_a = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user';
     var resource_a = process.env['cluster_endpoint_resource'];
     var resource = resource_a.concat(tenant_id);
     // var resource = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user100';
 
-    //   var arn = 'arn:aws:iam::account-no:role/MB3_role_for_all_users';
     var arn = process.env['iam_arn'];
 
     var session_policy = {
@@ -63,7 +61,6 @@ exports.handler = async (event) => {
                 sessionToken: iamCredentialResponse.Credentials.SessionToken
             });
 
-            //   console.log(iamCredentials);
             let signer = new AWS.RDS.Signer({
                 credentials: iamCredentials
             });
