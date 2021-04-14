@@ -34,7 +34,7 @@ Parameters:
     Type: String
 
   ProxySecurityGroup:
-    Type: String # Has to be type String as NoProxy has 'NA' value
+    Type: String # Has to be type String as NoProxy has '*' value
 
 Conditions:
   IsRDSProxy: !Equals [!Ref CreateRDSProxy, true]
@@ -70,7 +70,18 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - AWSLambdaVPCAccessExecutionRole
         - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
-        - SecretsManagerReadWrite
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref DBSecretArn
+            - Effect: Allow
+              Action:
+                - secretsmanager:CreateSecret
+                - secretsmanager:DeleteSecret
+                - secretsmanager:TagResource
+              Resource: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Proxy_secret_for_user*
         - Version: "2012-10-17"
           Statement:
             - Effect: Allow
@@ -119,7 +130,18 @@ Resources:
         - AWSLambdaBasicExecutionRole
         - AWSLambdaVPCAccessExecutionRole
         - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
-        - SecretsManagerReadWrite
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref DBSecretArn
+            - Effect: Allow
+              Action:
+                - secretsmanager:CreateSecret
+                - secretsmanager:DeleteSecret
+                - secretsmanager:TagResource
+              Resource: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Proxy_secret_for_user*
       Runtime: python3.8
       Timeout: 900
       Tracing: Active
