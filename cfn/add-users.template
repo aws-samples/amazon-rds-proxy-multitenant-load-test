@@ -57,7 +57,7 @@ Resources:
           USERS_TO_CREATE: 200
           REGION: !Sub ${AWS::Region}
           SECRETARN: !Ref DBSecretArn
-          DATABASE: test2
+          DATABASE: main
           NUMBER_OF_ROWS: 1000
           PROXY_NAME: !Ref DBProxyName
       FunctionName: !Sub fn-${AWS::StackName}
@@ -107,7 +107,7 @@ Resources:
           USERS_TO_CREATE: 200
           NUMBER_OF_ROWS: 1000
           REGION: !Sub ${AWS::Region}
-          DATABASE: test2
+          DATABASE: main
           SECRETARN: !Ref DBSecretArn
       FunctionName: !Sub fn-${AWS::StackName}
       Handler: cr_add_users_noproxy.handler
