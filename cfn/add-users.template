@@ -18,6 +18,9 @@ Parameters:
   Endpoint:
     Type: String
 
+  DBInstanceIdentifier:
+    Type: String
+
   RDSSecurityGroup:
     Type: AWS::EC2::SecurityGroup::Id
 
@@ -52,7 +55,7 @@ Resources:
       Environment:
         Variables:
           ENDPOINT: !Ref Endpoint
-          PASSWORD: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/user
+          PASSWORD: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${DBInstanceIdentifier}/user
           USER: admin
           USERS_TO_CREATE: 200
           REGION: !Sub ${AWS::Region}
@@ -65,11 +68,40 @@ Resources:
       Layers:
         - !Ref LayerVersionArn
       Policies:
-        - AWSXrayWriteOnlyAccess
         - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
-        - AWSLambdaBasicExecutionRole
-        - AWSLambdaVPCAccessExecutionRole
-        - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+                - xray:GetSamplingRules
+                - xray:GetSamplingTargets
+                - xray:GetSamplingStatisticSummaries
+              Resource: '*'
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*
+                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - ec2:DescribeNetworkInterfaces
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - ec2:CreateNetworkInterface
+                - ec2:DeleteNetworkInterface
+                - ec2:AssignPrivateIpAddresses
+                - ec2:UnassignPrivateIpAddresses
+              Resource: '*'
         - Version: "2012-10-17"
           Statement:
             - Effect: Allow
@@ -125,11 +157,40 @@ Resources:
       Layers:
         - !Ref LayerVersionArn
       Policies:
-        - AWSXrayWriteOnlyAccess
         - arn:aws:iam::aws:policy/AmazonRDSDataFullAccess
-        - AWSLambdaBasicExecutionRole
-        - AWSLambdaVPCAccessExecutionRole
-        - arn:aws:iam::aws:policy/AWSLambda_ReadOnlyAccess
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - xray:PutTraceSegments
+                - xray:PutTelemetryRecords
+                - xray:GetSamplingRules
+                - xray:GetSamplingTargets
+                - xray:GetSamplingStatisticSummaries
+              Resource: '*'
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - logs:CreateLogGroup
+                - logs:CreateLogStream
+                - logs:PutLogEvents
+              Resource:
+                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*
+                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - ec2:DescribeNetworkInterfaces
+              Resource: '*'
+            - Effect: Allow
+              Action:
+                - ec2:CreateNetworkInterface
+                - ec2:DeleteNetworkInterface
+                - ec2:AssignPrivateIpAddresses
+                - ec2:UnassignPrivateIpAddresses
+              Resource: '*'
         - Version: "2012-10-17"
           Statement:
             - Effect: Allow
