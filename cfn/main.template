@@ -362,7 +362,6 @@ Resources:
         PrivateSubnet2: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet2
         LayerVersionArn: !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
         Endpoint: !GetAtt ProxyRDSStack.Outputs.ClusterEndpoint
-        DBInstanceIdentifier: !GetAtt ProxyRDSStack.Outputs.DBInstanceName
         RDSSecurityGroup: !GetAtt ProxyRDSStack.Outputs.RDSSecurityGroup
         CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
         ProxySecurityGroup: !GetAtt ProxyRDSStack.Outputs.ProxySecurityGroup
@@ -386,7 +385,6 @@ Resources:
         PrivateSubnet2: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet2
         LayerVersionArn: !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
         Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpoint
-        DBInstanceIdentifier: !GetAtt NoProxyRDSStack.Outputs.DBInstanceName
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
