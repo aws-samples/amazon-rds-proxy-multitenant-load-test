@@ -37,7 +37,7 @@ Resources:
       DatabaseName: test2
       DBClusterParameterGroupName: !Ref DBClusterParameterGroup
       DBSubnetGroupName: !Ref DBSubnetGroup
-      StorageEncrypted: false
+      StorageEncrypted: true
       EnableIAMDatabaseAuthentication: !If
         - IsRDSProxy
         - false
