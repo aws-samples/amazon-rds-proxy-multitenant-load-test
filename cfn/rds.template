@@ -166,8 +166,16 @@ Resources:
             Principal:
               Service: rds.amazonaws.com
         Version: "2012-10-17"
-      ManagedPolicyArns:
-        - arn:aws:iam::aws:policy/SecretsManagerReadWrite
+      Policies:
+        - PolicyName: SecretsManagerSeviceAccess
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - secretsmanager:GetSecretValue
+                Resource: !Ref DBSecret
+    Condition: IsRDSProxy
 
   DBProxyTargetGroup:
     Type: AWS::RDS::DBProxyTargetGroup
