@@ -5,7 +5,7 @@
 
 #### Database migration from a simulated on-premises MS SQL Server to an Amazon RDS instance in AWS Cloud
 
-An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL clusters, one with and one without Amazon RDS Proxy. This is repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy
+An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL clusters, one with and one without Amazon RDS Proxy. This is repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy.
 
 An overview of the architecture is below:
 
@@ -52,18 +52,19 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 
 |Parameter label|Default|Description|
 |---------------|-------|-----------|
-|CreateLoadTest|true|Should the CloudFormation create a Load Test stack. Load test stack will be created, if set to 'true'.|
-|AvailabilityZones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select 'two' Availability Zones from your list.|
-|DBInstanceClass|db.r5.large|The compute and memory capacity of the DB instance, for example, db.m5.large.|
-|PerformanceInsightsRetentionPeriod|7|The amount of time, in days, to retain Performance Insights data. Valid values are 7 or 731 (2 years).|
-|LambdaRuntimeEnv|Node.js|Choose a runtime for Lambda Function/Layer.|
-|LocustAmiId|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|Latest Amazon Linux AMI Using Systems Manager Parameter Store.|
-|LocustInstanceType|c5.large|The EC2 instance type for the Locust App.|
-|LocustVersion|1.2.3|Locust version to deploy.|
-|LocustSecondaryInstanceCapacity|2|Run Locust load tests distributed across multiple machines.|
-|ApiEndpointType|PRIVATE|Amazon API Gateway endpoint types or its custom domain name. Valid values (EDGE, REGIONAL, PRIVATE).|
-|OnPremIp|0.0.0.0/0|CIDR block of an on-premise IP address.|
+|CreateLoadTest|true|If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.|
+|AvailabilityZones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.|
+|DBInstanceClass|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora instances, for example db.m5.large.|
+|PerformanceInsightsRetentionPeriod|7|The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).|
+|LambdaRuntimeEnv|Node.js|The runtime for Lambda access Function/Layer.|
+|LocustAmiId|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from Systems Manager Parameter Store.|
+|LocustInstanceType|c5.large|The Amazon EC2 instance type used in the Load Test cluster that runs Locust.|
+|LocustVersion|1.2.3|The Locust version to deploy.|
+|LocustSecondaryInstanceCapacity|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
+|ApiEndpointType|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
+|OnPremIp|0.0.0.0/0|The CIDR block of an on-premise IP address. This limits the CIDR range from which the Locust dashboard can be accessed.|
 |Environment|DEV|The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).|
+|EnableFlowLogs|false|Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.|
 
    When completed, click *Next*
 1. [Configure stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html) if desired, then click *Next*.
@@ -74,9 +75,11 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 
    These are required to allow CloudFormation to create a Role to allow access to resources needed by the stack and name the resources in a dynamic way.
 1. Click *Create Stack*
-1. Wait for the CloudFormation stack to launch. Completion is indicated when the "Stack status" is "*CREATE_COMPLETE*".
+1. Wait for the CloudFormation stack to launch. This will take around 30 minutes. Completion is indicated when the "Stack status" is "*CREATE_COMPLETE*".
    * You can monitor the stack creation progress in the "Events" tab.
 1. Note the *EC2SQLServerEip* and *RDSSQLEndpoint* displayed in the *Outputs* tab of the main stack. This can be used to access the EC2 host and RDS instance.
+
+If you are familiar with Locust, you can also modify the Locust file as written in the CloudFormation template. For more information, please refer to [here](https://docs.locust.io/en/stable/writing-a-locustfile.html) for how to write a Locustfile.
 
 ## Local Development
 See [Local Development](docs/LOCAL_DEVELOPMENT.md) guide to get a copy of the project up and running on your local machine for development and testing purposes.

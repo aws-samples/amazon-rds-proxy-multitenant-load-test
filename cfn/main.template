@@ -59,7 +59,7 @@ Metadata:
 
 Parameters:
   CreateLoadTest:
-    Description: Should the CloudFormation create a Load Test stack. Load test stack will be created, if set to 'true'.
+    Description: If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.
     Type: String
     AllowedValues:
       - false
@@ -68,21 +68,21 @@ Parameters:
     ConstraintDescription: Must specify 'true' or 'false'
 
   AvailabilityZones:
-    Description: The list of Availability Zones to use for the subnets in the VPC. Select 'two' Availability Zones from your list.
+    Description: The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.
     Type: List<AWS::EC2::AvailabilityZone::Name>
 
   DBInstanceClass:
-    Description: The compute and memory capacity of the DB instance, for example, db.m5.large.
+    Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora instances, for example db.m5.large.
     Type: String
     Default: db.r5.large
 
   PerformanceInsightsRetentionPeriod:
-    Description: The amount of time, in days, to retain Performance Insights data. Valid values are 7 or 731 (2 years).
+    Description: The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).
     Type: Number
     Default: 7
 
   LambdaRuntimeEnv:
-    Description: Choose a runtime for Lambda Function/Layer.
+    Description: The runtime for Lambda access Function/Layer.
     Type: String
     AllowedValues:
       - Python
@@ -90,27 +90,27 @@ Parameters:
     Default: Nodejs
 
   LocustAmiId:
-    Description: Latest Amazon Linux AMI Using Systems Manager Parameter Store.
+    Description: The latest Amazon Linux AMI from Systems Manager Parameter Store.
     Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
 
   LocustInstanceType:
-    Description: The EC2 instance type for the Locust App.
+    Description: The Amazon EC2 instance type used in the Load Test cluster that runs Locust.
     Type: String
     Default: c5.large
 
   LocustVersion:
-    Description: Locust version to deploy.
+    Description: The Locust version to deploy.
     Type: String
     Default: 1.2.3
 
   LocustSecondaryInstanceCapacity:
-    Description: Run Locust load tests distributed across multiple machines.
+    Description: The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.
     Type: Number
     Default: 2
 
   ApiEndpointType:
-    Description: Amazon API Gateway endpoint types or its custom domain name. Valid values (EDGE, REGIONAL, PRIVATE).
+    Description: The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).
     Type: String
     AllowedValues:
       - EDGE
@@ -119,7 +119,7 @@ Parameters:
     Default: PRIVATE
 
   OnPremIp:
-    Description: CIDR block of an on-premise IP address.
+    Description: The CIDR block of an on-premise IP address. This limits the CIDR range from which the Locust dashboard can be accessed.
     Type: String
     Default: 0.0.0.0/0
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$

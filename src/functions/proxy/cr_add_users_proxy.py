@@ -73,7 +73,9 @@ def create(event, context):
             for insert in insert_query:
                 cur.execute(insert)
 
-            secret_name = "Proxy_secret_for_user" + str(i)
+            secret_name = (
+                "Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user" + str(i)
+            )
             secret_description = (
                 "Proxy secret created, for use with RDS Proxy and Aurora MySQL, for user"
                 + str(i)
@@ -129,7 +131,9 @@ def handler(event, context):
 
 def _delete_secret():
     for num in range(200):
-        secret_name = f"Proxy_secret_for_user{num}"
+        secret_name = (
+            f"Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user{num}"
+        )
         secretsmanager.delete_secret(
             SecretId=secret_name, ForceDeleteWithoutRecovery=True
         )

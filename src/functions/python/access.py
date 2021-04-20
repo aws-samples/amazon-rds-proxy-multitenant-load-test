@@ -31,12 +31,10 @@ def lambda_handler(event, context):
     # database = 'user_database100';
 
     # Resource name
-    # resource_a = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user';
     resource_a = os.environ["cluster_endpoint_resource"]
     resource = resource_a + tenant_id
     # resource = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user100';
 
-    # arn = 'arn:aws:iam::account-no:role/MB3_role_for_all_users';
     arn = os.environ["iam_arn"]
 
     session_policy = {

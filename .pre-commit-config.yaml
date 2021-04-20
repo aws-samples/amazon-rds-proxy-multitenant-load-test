@@ -36,21 +36,21 @@ repos:
 
 # CloudFormation
 - repo: https://github.com/aws-cloudformation/cfn-python-lint
-  rev: v0.48.0
+  rev: v0.48.3
   hooks:
   - id: cfn-python-lint
     name: AWS CloudFormation Linter
     files: \.(template)$
 
 - repo: https://github.com/aws-cloudformation/rain
-  rev: v1.1.2
+  rev: v1.2.0
   hooks:
   - id: cfn-format
     files: \.template$
 
 # Python
 - repo: https://github.com/pycqa/pylint
-  rev: pylint-2.6.0
+  rev: pylint-2.7.4
   hooks:
   - id: pylint
     args:
