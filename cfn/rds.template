@@ -171,10 +171,28 @@ Resources:
           PolicyDocument:
             Version: "2012-10-17"
             Statement:
-              - Effect: Allow
+              - Sid: GetSecretValue
+                Effect: Allow
                 Action:
                   - secretsmanager:GetSecretValue
-                Resource: !Ref DBSecret
+                Resource:
+                  - !Ref DBSecret
+              - Sid: DecryptSecretValue
+                Effect: Allow
+                Action:
+                  - kms:Decrypt
+                Resource: # Get the DB Secret name without arn bit
+                  - !Join
+                    - ""
+                    - - !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/
+                      - !Select
+                        - 6
+                        - !Split
+                          - ':'
+                          - !Ref DBSecret
+                Condition:
+                  StringEquals:
+                    kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
     Condition: IsRDSProxy
 
   DBProxyTargetGroup:
@@ -220,3 +238,13 @@ Outputs:
 
   DBInstanceName:
     Value: !Ref DBInstance
+
+  SecretName:
+    Value: !Join
+      - ""
+      - - !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/
+        - !Select
+          - 6
+          - !Split
+            - ':'
+            - !Ref DBSecret
