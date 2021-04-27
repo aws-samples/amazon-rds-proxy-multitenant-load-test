@@ -131,6 +131,7 @@ Resources:
       VpcSecurityGroupIds:
         - !Ref ProxySecurityGroup
     Condition: IsRDSProxy
+    DependsOn: DBCluster
 
   ProxySecurityGroup:
     Type: AWS::EC2::SecurityGroup
