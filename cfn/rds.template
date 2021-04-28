@@ -177,19 +177,21 @@ Resources:
                   - secretsmanager:GetSecretValue
                 Resource:
                   - !Ref DBSecret
+                  - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user*
               - Sid: DecryptSecretValue
                 Effect: Allow
                 Action:
                   - kms:Decrypt
-                Resource: # Get the DB Secret name without arn bit
+                Resource:
                   - !Join
                     - ""
                     - - !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/
                       - !Select
                         - 6
                         - !Split
-                          - ':'
+                          - ':' # Get the DB Secret name without arn bit
                           - !Ref DBSecret
+                  - !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/*
                 Condition:
                   StringEquals:
                     kms:ViaService: !Sub secretsmanager.${AWS::Region}.amazonaws.com
