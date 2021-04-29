@@ -116,6 +116,7 @@ Resources:
 
   DBProxy:
     Type: AWS::RDS::DBProxy
+    DependsOn: DBCluster
     Properties:
       Auth:
         - AuthScheme: SECRETS
@@ -131,7 +132,6 @@ Resources:
       VpcSecurityGroupIds:
         - !Ref ProxySecurityGroup
     Condition: IsRDSProxy
-    DependsOn: DBCluster
 
   ProxySecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -241,13 +241,3 @@ Outputs:
 
   DBInstanceName:
     Value: !Ref DBInstance
-
-  SecretName:
-    Value: !Join
-      - ""
-      - - !Sub arn:${AWS::Partition}:kms:${AWS::Region}:${AWS::AccountId}:key/
-        - !Select
-          - 6
-          - !Split
-            - ':'
-            - !Ref DBSecret

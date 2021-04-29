@@ -72,8 +72,10 @@ def lambda_handler(event, context):
         query_results = cur.fetchall()
         print(query_results)
 
+        return {"statusCode": 200, "body": json.dumps(query_results)}
+
     except Exception as e:
         print("Database connection failed due to {}".format(e))
         query_results = "Database connection failed due to {}".format(e)
 
-    return {"statusCode": 200, "body": json.dumps(query_results)}
+        return query_results
