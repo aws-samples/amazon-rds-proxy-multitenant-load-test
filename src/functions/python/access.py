@@ -1,4 +1,4 @@
-# Access layer, no proxy
+# Access layer
 import json
 import os
 import random
