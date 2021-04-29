@@ -23,6 +23,7 @@ Metadata:
           default: Load test configuration
         Parameters:
           - CreateLoadTest
+          - UsersToCreate
           - LocustAmiId
           - LocustInstanceType
           - LocustVersion
@@ -42,6 +43,8 @@ Metadata:
         deafult: Infrastructure Environment
       CreateLoadTest:
         default: Create Load Test Stack
+      UsersToCreate:
+        default: Number of users to create
       LocustAmiId:
         default: Latest Amazon Linux AMI
       LocustInstanceType:
@@ -66,6 +69,13 @@ Parameters:
       - true
     Default: true
     ConstraintDescription: Must specify 'true' or 'false'
+
+  UsersToCreate:
+    Description: Each proxy can have up to 200 associated Secrets Manager secrets. Thus, each proxy can connect to with up to 200 different user accounts at any given time. Allowed values are 1-200
+    Type: String
+    Default: 200
+    AllowedPattern: ^(20[0]|1[0-9][0-9]|[1-9]?[1-9])$
+    ConstraintDescription: Users parameter must be in the range 1-199
 
   AvailabilityZones:
     Description: The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.
@@ -366,6 +376,7 @@ Resources:
         DBSecretArn: !GetAtt ProxyRDSStack.Outputs.DBSecret
         DBProxyName: !GetAtt ProxyRDSStack.Outputs.DBProxyName
         DBProxyArn: !GetAtt ProxyRDSStack.Outputs.DBProxyArn
+        UsersToCreate: !Ref UsersToCreate
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
@@ -389,6 +400,7 @@ Resources:
         DBSecretArn: !GetAtt NoProxyRDSStack.Outputs.DBSecret
         DBProxyName: NA
         DBProxyArn: NA
+        UsersToCreate: !Ref UsersToCreate
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
