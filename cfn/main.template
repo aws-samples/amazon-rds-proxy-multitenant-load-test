@@ -102,7 +102,7 @@ Parameters:
   LocustVersion:
     Description: The Locust version to deploy.
     Type: String
-    Default: LATEST
+    Default: latest
 
   LocustSecondaryInstanceCapacity:
     Description: The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.
