@@ -30,6 +30,9 @@ Parameters:
   CreateRDSProxy:
     Type: String
 
+  DbClusterResourceId:
+    Type: String
+
 Conditions:
   IsPython: !Equals [!Ref LambdaRuntimeEnv, Python]
 
@@ -49,7 +52,7 @@ Resources:
         Variables:
           AWS_STS_REGIONAL_ENDPOINTS: regional
           endpoint: !Ref Endpoint
-          cluster_endpoint_resource: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/user
+          cluster_endpoint_resource: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${DbClusterResourceId}/user
           region: !Sub ${AWS::Region}
           iam_arn: !GetAtt STSRole.Arn
       FunctionName: !Sub fn-${AWS::StackName}
@@ -77,7 +80,7 @@ Resources:
         Variables:
           AWS_STS_REGIONAL_ENDPOINTS: regional
           endpoint: !Ref Endpoint
-          cluster_endpoint_resource: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*/user
+          cluster_endpoint_resource: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${DbClusterResourceId}/user
           region: !Sub ${AWS::Region}
           iam_arn: !GetAtt STSRole.Arn
       FunctionName: !Sub fn-${AWS::StackName}
