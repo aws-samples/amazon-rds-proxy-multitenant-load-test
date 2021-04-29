@@ -317,7 +317,6 @@ Resources:
           - !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
           - !GetAtt ProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
         Endpoint: !GetAtt ProxyRDSStack.Outputs.ProxyEndpoint
-        DBInstanceIdentifier: !GetAtt ProxyRDSStack.Outputs.DBInstanceName
         RDSSecurityGroup: !GetAtt ProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: !GetAtt ProxyRDSStack.Outputs.ProxySecurityGroup
         CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
@@ -341,7 +340,6 @@ Resources:
           - !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
           - !GetAtt NoProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
         Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpoint
-        DBInstanceIdentifier: !GetAtt NoProxyRDSStack.Outputs.DBInstanceName
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
