@@ -59,7 +59,7 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 |LambdaRuntimeEnv|Node.js|The runtime for Lambda access Function/Layer.|
 |LocustAmiId|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from Systems Manager Parameter Store.|
 |LocustInstanceType|c5.large|The Amazon EC2 instance type used in the Load Test cluster that runs Locust.|
-|LocustVersion|1.2.3|The Locust version to deploy.|
+|LocustVersion|latest|The Locust version to deploy.|
 |LocustSecondaryInstanceCapacity|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
 |ApiEndpointType|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
 |OnPremIp|0.0.0.0/0|The CIDR block of an on-premise IP address. This limits the CIDR range from which the Locust dashboard can be accessed.|
