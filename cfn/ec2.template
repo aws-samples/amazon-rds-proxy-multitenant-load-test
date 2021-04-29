@@ -25,9 +25,7 @@ Parameters:
     Type: String
 
 Conditions:
-  LatestVersion: !Equals
-    - !Ref LocustVersion
-    - LATEST
+  IsLatestVersion: !Equals [!Ref LocustVersion, latest]
 
 Resources:
   PrimarySecurityGroup:
@@ -202,7 +200,10 @@ Resources:
               group: root
           commands:
             01-install-locust:
-              command: !If [LatestVersion, python3 -m pip install locust, python3 -m pip install locust==!Ref LocustVersion]
+              command: !If
+                - IsLatestVersion
+                - python3 -m pip install locust
+                - !Sub python3 -m pip install locust==${LocustVersion}
               ignoreErrors: true
             02-start-locust:
               command: locust -P 80 -f locustfile.py --master </dev/null &>/dev/null & #dettach from STDOUT and Start process in own shell
@@ -298,7 +299,10 @@ Resources:
               group: root
           commands:
             01-install-locust:
-              command: !If [LatestVersion, python3 -m pip install locust, python3 -m pip install locust==!Ref LocustVersion]
+              command: !If
+                - IsLatestVersion
+                - python3 -m pip install locust
+                - !Sub python3 -m pip install locust==${LocustVersion}
               ignoreErrors: true
             02-start-locust:
               command: !Join
