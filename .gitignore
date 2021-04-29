@@ -10,6 +10,7 @@
 !/src/functions/nodejs/index.js
 !/src/functions/proxy/cr_add_users_proxy.py
 !/src/functions/proxy/cr_add_users_noproxy.py
+!/src/functions/rds/cluster.py
 
 ### VirtualEnv template
 # Virtualenv

@@ -24,8 +24,13 @@ Parameters:
   CreateRDSProxy:
     Type: String
 
+  LayerVersionArn:
+    Type: String
+
 Conditions:
   IsRDSProxy: !Equals [!Ref CreateRDSProxy, true]
+
+Transform: AWS::Serverless-2016-10-31
 
 Resources:
   DBCluster:
@@ -213,6 +218,30 @@ Resources:
         - !Ref DBCluster
     Condition: IsRDSProxy
 
+  DbClusterResourceIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Description: Get DB cluster id.
+      Handler: cluster.handler
+      Runtime: python3.8
+      CodeUri: ../src/functions/rds
+      Layers:
+        - !Ref LayerVersionArn
+      Policies:
+        - Version: "2012-10-17"
+          Statement:
+            - Effect: Allow
+              Action:
+                - rds:DescribeDBClusters
+              Resource: !Sub arn:${AWS::Partition}:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBCluster}
+
+  DbClusterResourceIdCustom:
+    Type: Custom::DbClusterResourceId
+    Properties:
+      ServiceToken: !GetAtt DbClusterResourceIdFunction.Arn
+      DBClusterIdentifier: !Ref DBCluster
+    Version: "1.0"
+
 Outputs:
   RDSSecurityGroup:
     Value: !Ref RDSSecurityGroup
@@ -241,3 +270,6 @@ Outputs:
 
   DBInstanceName:
     Value: !Ref DBInstance
+
+  DbClusterResourceId:
+    Value: !GetAtt DbClusterResourceIdCustom.DbClusterResourceId

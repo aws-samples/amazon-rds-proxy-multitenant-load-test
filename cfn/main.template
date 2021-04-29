@@ -261,6 +261,7 @@ Resources:
         DBInstanceClass: !Ref DBInstanceClass
         PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
         CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
+        LayerVersionArn: !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
@@ -281,6 +282,7 @@ Resources:
         DBInstanceClass: !Ref DBInstanceClass
         PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
+        LayerVersionArn: !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
@@ -330,6 +332,7 @@ Resources:
         RDSSecurityGroup: !GetAtt ProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: !GetAtt ProxyRDSStack.Outputs.ProxySecurityGroup
         CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
+        DbClusterResourceId: !GetAtt ProxyRDSStack.Outputs.DbClusterResourceId
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
@@ -353,6 +356,7 @@ Resources:
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
+        DbClusterResourceId: !GetAtt NoProxyRDSStack.Outputs.DbClusterResourceId
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
