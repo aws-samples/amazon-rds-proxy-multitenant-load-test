@@ -359,7 +359,7 @@ Resources:
     Type: AWS::EC2::SpotFleet
     Properties:
       SpotFleetRequestConfigData:
-        AllocationStrategy: diversified
+        AllocationStrategy: capacityOptimized
         IamFleetRole: !GetAtt SpotFleetRole.Arn
         TargetCapacity: !Ref SecondaryInstanceCapacity
         LaunchTemplateConfigs:
