@@ -271,5 +271,12 @@ Outputs:
   DBInstanceName:
     Value: !Ref DBInstance
 
-  DbClusterResourceId:
-    Value: !GetAtt DbClusterResourceIdCustom.DbClusterResourceId
+  ClusterEndpointResourceId:
+    Value: !If
+      - IsRDSProxy
+      - !Select
+        - 6
+        - !Split
+          - ':'
+          - !GetAtt DBProxy.DBProxyArn
+      - !GetAtt DbClusterResourceIdCustom.DbClusterResourceId
