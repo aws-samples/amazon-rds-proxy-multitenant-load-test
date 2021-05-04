@@ -332,7 +332,7 @@ Resources:
         RDSSecurityGroup: !GetAtt ProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: !GetAtt ProxyRDSStack.Outputs.ProxySecurityGroup
         CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
-        DbClusterResourceId: !GetAtt ProxyRDSStack.Outputs.DbClusterResourceId
+        ClusterEndpointResourceId: !GetAtt ProxyRDSStack.Outputs.ClusterEndpointResourceId
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
@@ -356,7 +356,7 @@ Resources:
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
-        DbClusterResourceId: !GetAtt NoProxyRDSStack.Outputs.DbClusterResourceId
+        ClusterEndpointResourceId: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpointResourceId
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]
