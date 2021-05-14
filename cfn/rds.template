@@ -98,16 +98,6 @@ Resources:
       Engine: aurora-mysql
       PubliclyAccessible: false
 
-  DBInstance4:
-    Type: AWS::RDS::DBInstance
-    Properties:
-      DBInstanceClass: !Ref DBInstanceClass
-      EnablePerformanceInsights: true
-      PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
-      DBClusterIdentifier: !Ref DBCluster
-      Engine: aurora-mysql
-      PubliclyAccessible: false
-
   DBSecret:
     Type: AWS::SecretsManager::Secret
     Properties:
@@ -214,7 +204,6 @@ Resources:
       - DBInstance1
       - DBInstance2
       - DBInstance3
-      - DBInstance4
     Properties:
       DBProxyName: !Ref DBProxy
       TargetGroupName: default
