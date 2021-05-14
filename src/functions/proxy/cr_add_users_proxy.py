@@ -40,7 +40,6 @@ secret_tags = [
 
 @helper.create
 def create(event, context):
-    logger.info("Got Create")
 
     secret_value = json.loads(
         secretsmanager.get_secret_value(SecretId=secret_arn)["SecretString"]

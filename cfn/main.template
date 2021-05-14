@@ -352,7 +352,7 @@ Resources:
           - IsPython
           - !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
           - !GetAtt NoProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
-        Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpoint
+        Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterReaderEndpoint
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
