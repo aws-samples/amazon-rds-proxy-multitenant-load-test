@@ -68,7 +68,7 @@ Resources:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
 
-  DBInstance1:
+  DBWriterInstance:
     Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceClass: !Ref DBInstanceClass
@@ -78,7 +78,7 @@ Resources:
       Engine: aurora-mysql
       PubliclyAccessible: false
 
-  DBInstance2:
+  DBReaderInstance1:
     Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceClass: !Ref DBInstanceClass
@@ -88,7 +88,7 @@ Resources:
       Engine: aurora-mysql
       PubliclyAccessible: false
 
-  DBInstance3:
+  DBReaderInstance2:
     Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceClass: !Ref DBInstanceClass
@@ -201,9 +201,9 @@ Resources:
   DBProxyTargetGroup:
     Type: AWS::RDS::DBProxyTargetGroup
     DependsOn:
-      - DBInstance1
-      - DBInstance2
-      - DBInstance3
+      - DBWriterInstance
+      - DBReaderInstance1
+      - DBReaderInstance2
     Properties:
       DBProxyName: !Ref DBProxy
       TargetGroupName: default
@@ -269,7 +269,7 @@ Outputs:
     Condition: IsRDSProxy
 
   DBInstanceName:
-    Value: !Ref DBInstance1
+    Value: !Ref DBWriterInstance
 
   ClusterEndpointResourceId:
     Value: !If
