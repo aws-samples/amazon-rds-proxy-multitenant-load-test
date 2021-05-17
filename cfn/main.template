@@ -425,8 +425,8 @@ Resources:
           - IsPython
           - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
           - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
-        ProxyInstanceName: !GetAtt ProxyRDSStack.Outputs.DBInstanceName
-        NoProxyInstanceName: !GetAtt NoProxyRDSStack.Outputs.DBInstanceName
+        ProxyClusterName: !GetAtt ProxyRDSStack.Outputs.DBClusterName
+        NoProxyClusterName: !GetAtt NoProxyRDSStack.Outputs.DBClusterName
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]

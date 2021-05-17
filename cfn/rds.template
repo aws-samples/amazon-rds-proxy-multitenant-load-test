@@ -271,6 +271,9 @@ Outputs:
   DBInstanceName:
     Value: !Ref DBWriterInstance
 
+  DBClusterName:
+    Value: !Ref DBCluster
+
   ClusterEndpointResourceId:
     Value: !If
       - IsRDSProxy
