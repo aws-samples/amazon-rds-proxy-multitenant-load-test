@@ -42,11 +42,11 @@ repos:
     name: AWS CloudFormation Linter
     files: \.(template)$
 
-# - repo: https://github.com/aws-cloudformation/rain
-#   rev: v1.2.0
-#   hooks:
-#   - id: cfn-format
-#     files: \.template$
+- repo: https://github.com/aws-cloudformation/rain
+  rev: v1.2.0
+  hooks:
+  - id: cfn-format
+    files: \.template$
 
 # Python
 - repo: https://github.com/pycqa/pylint

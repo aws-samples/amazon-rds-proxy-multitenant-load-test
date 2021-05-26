@@ -352,7 +352,7 @@ Resources:
           - IsPython
           - !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
           - !GetAtt NoProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
-        Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpoint
+        Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterReaderEndpoint
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
@@ -425,8 +425,8 @@ Resources:
           - IsPython
           - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
           - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
-        ProxyInstanceName: !GetAtt ProxyRDSStack.Outputs.DBInstanceName
-        NoProxyInstanceName: !GetAtt NoProxyRDSStack.Outputs.DBInstanceName
+        ProxyClusterName: !GetAtt ProxyRDSStack.Outputs.DBClusterName
+        NoProxyClusterName: !GetAtt NoProxyRDSStack.Outputs.DBClusterName
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]

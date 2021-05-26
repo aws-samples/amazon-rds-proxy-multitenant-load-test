@@ -40,7 +40,6 @@ Resources:
         - !Select [0, !Ref AvailabilityZones]
         - !Select [1, !Ref AvailabilityZones]
       DatabaseName: main
-      DBClusterParameterGroupName: !Ref DBClusterParameterGroup
       DBSubnetGroupName: !Ref DBSubnetGroup
       StorageEncrypted: true
       EnableIAMDatabaseAuthentication: !If
@@ -61,15 +60,6 @@ Resources:
       VpcSecurityGroupIds:
         - !Ref RDSSecurityGroup
 
-  DBClusterParameterGroup:
-    Type: AWS::RDS::DBClusterParameterGroup
-    Properties:
-      Description: CloudFormation Sample Aurora Cluster Parameter Group
-      Family: aurora-mysql5.7
-      Parameters:
-        max_connections: "16000"
-        max_user_connections: "4294967295"
-
   DBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
@@ -78,25 +68,35 @@ Resources:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
 
-  DBInstance:
+  DBWriterInstance:
     Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceClass: !Ref DBInstanceClass
       EnablePerformanceInsights: true
       PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
       DBClusterIdentifier: !Ref DBCluster
-      DBParameterGroupName: !Ref DBParameterGroup
       Engine: aurora-mysql
       PubliclyAccessible: false
 
-  DBParameterGroup:
-    Type: AWS::RDS::DBParameterGroup
+  DBReaderInstance1:
+    Type: AWS::RDS::DBInstance
     Properties:
-      Description: CloudFormation Sample Aurora Parameter Group
-      Family: aurora-mysql5.7
-      Parameters:
-        max_connections: "16000"
-        max_user_connections: "4294967295"
+      DBInstanceClass: !Ref DBInstanceClass
+      EnablePerformanceInsights: true
+      PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
+      DBClusterIdentifier: !Ref DBCluster
+      Engine: aurora-mysql
+      PubliclyAccessible: false
+
+  DBReaderInstance2:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      DBInstanceClass: !Ref DBInstanceClass
+      EnablePerformanceInsights: true
+      PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
+      DBClusterIdentifier: !Ref DBCluster
+      Engine: aurora-mysql
+      PubliclyAccessible: false
 
   DBSecret:
     Type: AWS::SecretsManager::Secret
@@ -121,7 +121,6 @@ Resources:
 
   DBProxy:
     Type: AWS::RDS::DBProxy
-    DependsOn: DBCluster
     Properties:
       Auth:
         - AuthScheme: SECRETS
@@ -134,6 +133,19 @@ Resources:
         - !Ref PrivateSubnet1
         - !Ref PrivateSubnet2
       RequireTLS: true
+      VpcSecurityGroupIds:
+        - !Ref ProxySecurityGroup
+    Condition: IsRDSProxy
+
+  ProxyReaderEndpoint:
+    Type: AWS::RDS::DBProxyEndpoint
+    Properties:
+      DBProxyEndpointName: ProxyReaderEndpoint
+      DBProxyName: !Ref DBProxy
+      VpcSubnetIds:
+        - !Ref PrivateSubnet1
+        - !Ref PrivateSubnet2
+      TargetRole: READ_ONLY
       VpcSecurityGroupIds:
         - !Ref ProxySecurityGroup
     Condition: IsRDSProxy
@@ -189,7 +201,9 @@ Resources:
   DBProxyTargetGroup:
     Type: AWS::RDS::DBProxyTargetGroup
     DependsOn:
-      - DBInstance
+      - DBWriterInstance
+      - DBReaderInstance1
+      - DBReaderInstance2
     Properties:
       DBProxyName: !Ref DBProxy
       TargetGroupName: default
@@ -236,8 +250,11 @@ Outputs:
   ClusterEndpoint:
     Value: !GetAtt DBCluster.Endpoint.Address
 
+  ClusterReaderEndpoint:
+    Value: !GetAtt DBCluster.ReadEndpoint.Address
+
   ProxyEndpoint:
-    Value: !GetAtt DBProxy.Endpoint
+    Value: !GetAtt ProxyReaderEndpoint.Endpoint
     Condition: IsRDSProxy
 
   DBSecret:
@@ -252,7 +269,10 @@ Outputs:
     Condition: IsRDSProxy
 
   DBInstanceName:
-    Value: !Ref DBInstance
+    Value: !Ref DBWriterInstance
+
+  DBClusterName:
+    Value: !Ref DBCluster
 
   ClusterEndpointResourceId:
     Value: !If
