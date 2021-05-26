@@ -128,6 +128,8 @@ Assuming a 150 request per second load test for 4 hours, the price breakdown is 
 The above pricing examples (exclusing the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=1e41c1d61a96024f80f7b88b53554df6e47bdfae)
 
 Assuming the resources are deployed for a month, without a load test (all of the resources are running, except Locust), the price breakdown is as follows:
+|Service|Cost|Description|
+|---------------|-------|-----------|
 |Amazon Aurora MySQL| $455.45 |2x db.r5.large and 1x db.t3.small database instances running continuously|
 |Amazon RDS Proxy| $21.60 |Based on 2 vCPUs of db.r5.large, running continuously|
 |Amazon EC2| $195.15 |3x c5.large instances running continuously|
@@ -145,5 +147,3 @@ Contributions are more than welcome. Please read the [code of conduct](CODE_OF_C
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
-
-150 RPS, load test 30 mins
