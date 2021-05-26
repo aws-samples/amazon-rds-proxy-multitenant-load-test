@@ -97,6 +97,7 @@ To remove the stack:
 This sample is intended to be deployed only for as long as is strictly necessary, to avoid incurring additional costs. As soon as the load test is completed, the stack should be destroyed (see 'Clean up' above). Note that all pricing is estimated based on the us-east-1 region, and without the Free Tier.
 
 Assuming a 150 request per second load test for 30 minutes, the price breakdown is estimated as follows:
+
 |Service|Cost|Description|
 |---------------|-------|-----------|
 |Amazon Aurora MySQL| $0.43 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS.|
@@ -112,6 +113,7 @@ Assuming a 150 request per second load test for 30 minutes, the price breakdown 
 |Total| $3.54 |Total.|
 
 Assuming a 150 request per second load test for 4 hours, the price breakdown is estimated as follows:
+
 |Service|Cost|Description|
 |---------------|-------|-----------|
 |Amazon Aurora MySQL| $3.40 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS.|
@@ -126,9 +128,10 @@ Assuming a 150 request per second load test for 4 hours, the price breakdown is 
 |Data Transfer| $0.02 |170Gb transfer between AZs.|
 |Total| $28.36 |Total.|
 
-The above pricing examples (exclusing the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=1e41c1d61a96024f80f7b88b53554df6e47bdfae).
+The above pricing examples (excluding the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=1e41c1d61a96024f80f7b88b53554df6e47bdfae).
 
 Assuming the resources are deployed for a month, without a load test (all of the resources are running, except Locust), the price breakdown is estimated as follows:
+
 |Service|Cost|Description|
 |---------------|-------|-----------|
 |Amazon Aurora MySQL| $455.45 |2x db.r5.large and 1x db.t3.small database instances running continuously.|
@@ -139,7 +142,7 @@ Assuming the resources are deployed for a month, without a load test (all of the
 |AWS Private Link| $14.60 |Interface VPC endpoint for API Gateway, 2AZs.|
 |Total| $778.80 |Total.|
 
-The above pricing example (exclusing the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=fbd9e04fe2058108614023cbd93c99dd17aaf6b7).
+The above pricing example (excluding the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=fbd9e04fe2058108614023cbd93c99dd17aaf6b7).
 
 ## Contributing
 
