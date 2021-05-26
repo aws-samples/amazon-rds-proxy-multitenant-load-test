@@ -71,7 +71,7 @@ Resources:
   DBWriterInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceClass: !Ref DBInstanceClass
+      DBInstanceClass: db.t3.small
       EnablePerformanceInsights: true
       PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
       DBClusterIdentifier: !Ref DBCluster

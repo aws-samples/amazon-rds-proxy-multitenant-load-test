@@ -82,7 +82,7 @@ Parameters:
     Type: List<AWS::EC2::AvailabilityZone::Name>
 
   DBInstanceClass:
-    Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora instances, for example db.m5.large.
+    Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.
     Type: String
     Default: db.r5.large
 
