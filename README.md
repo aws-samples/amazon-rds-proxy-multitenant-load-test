@@ -95,50 +95,51 @@ To remove the stack:
 
 ## Detailed Pricing
 This sample is intended to be deployed only for as long as is strictly necessary, to avoid incurring additional costs. As soon as the load test is completed, the stack should be destroyed (see 'Clean up' above). Note that all pricing is estimated based on the us-east-1 region, and without the Free Tier.
-Assuming a 150 request per second load test for 30 minutes, the price breakdown is as follows:
+
+Assuming a 150 request per second load test for 30 minutes, the price breakdown is estimated as follows:
 |Service|Cost|Description|
 |---------------|-------|-----------|
-|Amazon Aurora MySQL| $0.43 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS|
-|Amazon RDS Proxy| $0.02 |Based on 2 vCPUs of db.r5.large, running continuously|
-|Amazon EC2| $0.14 |3x c5.large instances running continuously|
-|Amazon CloudWatch| $0.01 |CloudWatch dashboard + 20 metrics|
-|AWS X-Ray| $0.07 |150 Traces Per Second, with a 5% sampling rate|
-|AWS Secrets Manager| $0.73 |200 secrets, and 75 API calls per second|
-|AWS Lambda| $1.22 |150 RPS, assuming 2000ms duration per request|
-|Amazon API Gateway| $0.93 |150RPS to the REST API type|
-|AWS Private Link| $0.01 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month|
-|Data Transfer| $0.00 |170Gb transfer between AZs|
-|Total| $3.54 |Total|
+|Amazon Aurora MySQL| $0.43 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS.|
+|Amazon RDS Proxy| $0.02 |Based on 2 vCPUs of db.r5.large, running continuously.|
+|Amazon EC2| $0.14 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $0.01 |CloudWatch dashboard + 20 metrics.|
+|AWS X-Ray| $0.07 |150 Traces Per Second, with a 5% sampling rate.|
+|AWS Secrets Manager| $0.73 |200 secrets, and 75 API calls per second.|
+|AWS Lambda| $1.22 |150 RPS, assuming 2000ms duration per request.|
+|Amazon API Gateway| $0.93 |150RPS to the REST API type.|
+|AWS Private Link| $0.01 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month.|
+|Data Transfer| $0.00 |170Gb transfer between AZs.|
+|Total| $3.54 |Total.|
 
-Assuming a 150 request per second load test for 4 hours, the price breakdown is as follows:
+Assuming a 150 request per second load test for 4 hours, the price breakdown is estimated as follows:
 |Service|Cost|Description|
 |---------------|-------|-----------|
-|Amazon Aurora MySQL| $3.40 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS|
-|Amazon RDS Proxy| $0.12 |Based on 2 vCPUs of db.r5.large, running continuously|
-|Amazon EC2| $1.08 |3x c5.large instances running continuously|
-|Amazon CloudWatch| $0.07 |CloudWatch dashboard + 20 metrics|
-|AWS X-Ray| $0.56 |150 Traces Per Second, with a 5% sampling rate|
-|AWS Secrets Manager| $5.84 |200 secrets, and 75 API calls per second|
-|AWS Lambda| $9.75 |150 RPS, assuming 2000ms duration per request|
-|Amazon API Gateway| $7.43 |150RPS to the REST API type|
-|AWS Private Link| $0.09 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month|
-|Data Transfer| $0.02 |170Gb transfer between AZs|
-|Total| $28.36 |Total|
+|Amazon Aurora MySQL| $3.40 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS.|
+|Amazon RDS Proxy| $0.12 |Based on 2 vCPUs of db.r5.large, running continuously.|
+|Amazon EC2| $1.08 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $0.07 |CloudWatch dashboard + 20 metrics.|
+|AWS X-Ray| $0.56 |150 Traces Per Second, with a 5% sampling rate.|
+|AWS Secrets Manager| $5.84 |200 secrets, and 75 API calls per second.|
+|AWS Lambda| $9.75 |150 RPS, assuming 2000ms duration per request.|
+|Amazon API Gateway| $7.43 |150RPS to the REST API type.|
+|AWS Private Link| $0.09 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month.|
+|Data Transfer| $0.02 |170Gb transfer between AZs.|
+|Total| $28.36 |Total.|
 
-The above pricing examples (exclusing the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=1e41c1d61a96024f80f7b88b53554df6e47bdfae)
+The above pricing examples (exclusing the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=1e41c1d61a96024f80f7b88b53554df6e47bdfae).
 
-Assuming the resources are deployed for a month, without a load test (all of the resources are running, except Locust), the price breakdown is as follows:
+Assuming the resources are deployed for a month, without a load test (all of the resources are running, except Locust), the price breakdown is estimated as follows:
 |Service|Cost|Description|
 |---------------|-------|-----------|
-|Amazon Aurora MySQL| $455.45 |2x db.r5.large and 1x db.t3.small database instances running continuously|
-|Amazon RDS Proxy| $21.60 |Based on 2 vCPUs of db.r5.large, running continuously|
-|Amazon EC2| $195.15 |3x c5.large instances running continuously|
-|Amazon CloudWatch| $12.00 |CloudWatch dashboard + 20 metrics|
-|AWS Secrets Manager| $80.00 |200 secrets|
-|AWS Private Link| $14.60 |Interface VPC endpoint for API Gateway, 2AZs|
-|Total| $778.80 |Total|
+|Amazon Aurora MySQL| $455.45 |2x db.r5.large and 1x db.t3.small database instances running continuously.|
+|Amazon RDS Proxy| $21.60 |Based on 2 vCPUs of db.r5.large, running continuously.|
+|Amazon EC2| $195.15 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $12.00 |CloudWatch dashboard + 20 metrics.|
+|AWS Secrets Manager| $80.00 |200 secrets.|
+|AWS Private Link| $14.60 |Interface VPC endpoint for API Gateway, 2AZs.|
+|Total| $778.80 |Total.|
 
-The above pricing example (exclusing the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=fbd9e04fe2058108614023cbd93c99dd17aaf6b7)
+The above pricing example (exclusing the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=fbd9e04fe2058108614023cbd93c99dd17aaf6b7).
 
 ## Contributing
 
