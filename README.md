@@ -101,7 +101,7 @@ Assuming a 150 request per second load test for 30 minutes, the price breakdown 
 
 |Service|Cost|Description|
 |---------------|-------|-----------|
-|Amazon Aurora MySQL| $0.43 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS.|
+|Amazon Aurora MySQL| $0.45 |2x db.r5.large and 1x db.t3.medium database instances running continuously, 150 RPS.|
 |Amazon RDS Proxy| $0.02 |Based on 2 vCPUs of db.r5.large, running continuously.|
 |Amazon EC2| $0.14 |3x c5.large instances running continuously.|
 |Amazon CloudWatch| $0.01 |CloudWatch dashboard + 20 metrics.|
@@ -117,7 +117,7 @@ Assuming a 150 request per second load test for 4 hours, the price breakdown is 
 
 |Service|Cost|Description|
 |---------------|-------|-----------|
-|Amazon Aurora MySQL| $3.40 |2x db.r5.large and 1x db.t3.small database instances running continuously, 150 RPS.|
+|Amazon Aurora MySQL| $3.57 |2x db.r5.large and 1x db.t3.medium database instances running continuously, 150 RPS.|
 |Amazon RDS Proxy| $0.12 |Based on 2 vCPUs of db.r5.large, running continuously.|
 |Amazon EC2| $1.08 |3x c5.large instances running continuously.|
 |Amazon CloudWatch| $0.07 |CloudWatch dashboard + 20 metrics.|
@@ -129,13 +129,13 @@ Assuming a 150 request per second load test for 4 hours, the price breakdown is 
 |Data Transfer| $0.02 |170Gb transfer between AZs.|
 |Total| $28.36 |Total.|
 
-The above pricing examples (excluding the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=1e41c1d61a96024f80f7b88b53554df6e47bdfae).
+The above pricing examples (excluding the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=190761b4bcd88d44463b587a5dbc3c1884d54494).
 
 Assuming the resources are deployed for a month, without a load test (all of the resources are running, except Locust), the price breakdown is estimated as follows:
 
 |Service|Cost|Description|
 |---------------|-------|-----------|
-|Amazon Aurora MySQL| $455.45 |2x db.r5.large and 1x db.t3.small database instances running continuously.|
+|Amazon Aurora MySQL| $485.38 |2x db.r5.large and 1x db.t3.medium database instances running continuously.|
 |Amazon RDS Proxy| $21.60 |Based on 2 vCPUs of db.r5.large, running continuously.|
 |Amazon EC2| $195.15 |3x c5.large instances running continuously.|
 |Amazon CloudWatch| $12.00 |CloudWatch dashboard + 20 metrics.|
@@ -143,7 +143,7 @@ Assuming the resources are deployed for a month, without a load test (all of the
 |AWS Private Link| $14.60 |Interface VPC endpoint for API Gateway, 2AZs.|
 |Total| $778.80 |Total.|
 
-The above pricing example (excluding the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=fbd9e04fe2058108614023cbd93c99dd17aaf6b7).
+The above pricing example (excluding the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=26b0935e037cc8a093262f366cc30f285f99820b).
 
 ## Contributing
 
