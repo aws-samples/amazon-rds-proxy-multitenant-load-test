@@ -21,7 +21,7 @@ Parameters:
   SecondaryInstanceCapacity:
     Type: Number
 
-  OnPremIp:
+  CIDRRange:
     Type: String
 
 Conditions:
@@ -54,7 +54,7 @@ Resources:
           FromPort: 53
           ToPort: 53
       SecurityGroupIngress:
-        - CidrIp: !Ref OnPremIp
+        - CidrIp: !Ref CIDRRange
           Description: Allow http inbound traffic
           FromPort: 80
           IpProtocol: tcp

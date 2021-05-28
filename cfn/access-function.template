@@ -25,7 +25,7 @@ Parameters:
     Type: AWS::EC2::SecurityGroup::Id
 
   ProxySecurityGroup:
-    Type: String # Has to be type String as NoProxy has 'NA' value
+    Type: String
 
   CreateRDSProxy:
     Type: String
@@ -51,17 +51,17 @@ Resources:
       Environment:
         Variables:
           AWS_STS_REGIONAL_ENDPOINTS: regional
-          endpoint: !Ref Endpoint
-          cluster_endpoint_resource: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
-          region: !Sub ${AWS::Region}
-          iam_arn: !GetAtt STSRole.Arn
+          ENDPOINT: !Ref Endpoint
+          CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
+          REGION: !Ref AWS::Region
+          IAM_ARN: !GetAtt STSRole.Arn
       FunctionName: !Sub fn-${AWS::StackName}
       Handler: access.lambda_handler
       Layers:
         - !Ref LayerVersionArn
       Role: !GetAtt LambdaAccessRole.Arn
       Runtime: python3.8
-      Timeout: 60 #900
+      Timeout: 60
       Tracing: Active
       VpcConfig:
         SecurityGroupIds:
@@ -79,17 +79,17 @@ Resources:
       Environment:
         Variables:
           AWS_STS_REGIONAL_ENDPOINTS: regional
-          endpoint: !Ref Endpoint
-          cluster_endpoint_resource: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
-          region: !Sub ${AWS::Region}
-          iam_arn: !GetAtt STSRole.Arn
+          ENDPOINT: !Ref Endpoint
+          CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
+          REGION: !Ref AWS::Region
+          IAM_ARN: !GetAtt STSRole.Arn
       FunctionName: !Sub fn-${AWS::StackName}
       Handler: index.handler
       Layers:
         - !Ref LayerVersionArn
       Role: !GetAtt LambdaAccessRole.Arn
       Runtime: nodejs12.x
-      Timeout: 60 #900
+      Timeout: 60
       Tracing: Active
       VpcConfig:
         SecurityGroupIds:
@@ -202,7 +202,7 @@ Resources:
               AWS: !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${LambdaAccessRole}/fn-${AWS::StackName}
             Action: sts:AssumeRole
       Policies:
-        - PolicyName: StsPermissionsBoundary
+        - PolicyName: StsPermissionsLimit
           PolicyDocument:
             Version: "2012-10-17"
             Statement:

@@ -54,7 +54,8 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 |---------------|-------|-----------|
 |CreateLoadTest|true|If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.|
 |AvailabilityZones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.|
-|DBInstanceClass|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
+|DBWriterClass|db.t3.small|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.m5.large.|
+|DBReaderClass|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
 |PerformanceInsightsRetentionPeriod|7|The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).|
 |LambdaRuntimeEnv|Node.js|The runtime for Lambda access Function/Layer.|
 |LocustAmiId|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from Systems Manager Parameter Store.|
@@ -62,7 +63,7 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 |LocustVersion|latest|The Locust version to deploy.|
 |LocustSecondaryInstanceCapacity|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
 |ApiEndpointType|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
-|OnPremIp|0.0.0.0/0|The CIDR block of an on-premise IP address. This limits the CIDR range from which the Locust dashboard can be accessed.|
+|CIDRRange|Requires input|The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
 |Environment|DEV|The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).|
 |EnableFlowLogs|false|Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.|
 

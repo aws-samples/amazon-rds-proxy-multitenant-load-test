@@ -130,7 +130,7 @@ def handler(event, context):
 
 
 def _delete_secret():
-    for num in range(200):
+    for num in range(int(NUMBER_OF_USERS)):
         secret_name = (
             f"Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user{num}"
         )
