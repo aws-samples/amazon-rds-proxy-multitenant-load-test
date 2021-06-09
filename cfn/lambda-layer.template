@@ -9,8 +9,6 @@ Parameters:
 Conditions:
   IsNodeJs: !Equals [!Ref LambdaRuntimeEnv, Nodejs]
 
-  IsPython: !Equals [!Ref LambdaRuntimeEnv, Python]
-
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
@@ -25,7 +23,6 @@ Resources:
         - python3.7
         - python3.6
       RetentionPolicy: Delete
-    Condition: IsPython
 
   NodeJsLibrary:
     Type: AWS::Serverless::LayerVersion
@@ -42,7 +39,6 @@ Resources:
 Outputs:
   PythonLambdaLayer:
     Value: !Ref PythonLibrary
-    Condition: IsPython
 
   NodeJsLambdaLayer:
     Value: !Ref NodeJsLibrary
