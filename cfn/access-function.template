@@ -55,7 +55,7 @@ Resources:
           CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
-      FunctionName: !Sub fn-${AWS::StackName}
+      FunctionName: !Sub fn-python-${AWS::StackName}
       Handler: access.lambda_handler
       Layers:
         - !Ref LayerVersionArn
@@ -65,7 +65,7 @@ Resources:
       Tracing: Active
       VpcConfig:
         SecurityGroupIds:
-          - !Ref LamdaSecurityGroup
+          - !Ref LambdaSecurityGroup
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
@@ -83,7 +83,7 @@ Resources:
           CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
-      FunctionName: !Sub fn-${AWS::StackName}
+      FunctionName: !Sub fn-nodejs-${AWS::StackName}
       Handler: index.handler
       Layers:
         - !Ref LayerVersionArn
@@ -93,13 +93,13 @@ Resources:
       Tracing: Active
       VpcConfig:
         SecurityGroupIds:
-          - !Ref LamdaSecurityGroup
+          - !Ref LambdaSecurityGroup
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
     Condition: IsNodeJs
 
-  LamdaSecurityGroup:
+  LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Lambda Security Group
@@ -126,7 +126,7 @@ Resources:
       Description: Lambda to RDS ingress rule
       FromPort: 3306
       GroupId: !Ref RDSSecurityGroup
-      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      SourceSecurityGroupId: !Ref LambdaSecurityGroup
       ToPort: 3306
 
   LambdaToProxyIngress:
@@ -136,7 +136,7 @@ Resources:
       Description: Lambda to Proxy ingress rule
       FromPort: 3306
       GroupId: !Ref ProxySecurityGroup
-      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      SourceSecurityGroupId: !Ref LambdaSecurityGroup
       ToPort: 3306
     Condition: IsRDSProxy
 
@@ -199,7 +199,9 @@ Resources:
         Statement:
           - Effect: Allow
             Principal:
-              AWS: !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${LambdaAccessRole}/fn-${AWS::StackName}
+              AWS:
+                - !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${LambdaAccessRole}/fn-python-${AWS::StackName}
+                - !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${LambdaAccessRole}/fn-nodejs-${AWS::StackName}
             Action: sts:AssumeRole
       Policies:
         - PolicyName: StsPermissionsLimit

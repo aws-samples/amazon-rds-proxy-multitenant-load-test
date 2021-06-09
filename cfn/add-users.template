@@ -62,7 +62,6 @@ Resources:
           DATABASE: main
           NUMBER_OF_ROWS: 1000
           PROXY_NAME: !Ref DBProxyName
-      FunctionName: !Sub fn-${AWS::StackName}
       Handler: cr_add_users_proxy.handler
       Layers:
         - !Ref LayerVersionArn
@@ -72,7 +71,7 @@ Resources:
       Tracing: Active
       VpcConfig:
         SecurityGroupIds:
-          - !Ref LamdaSecurityGroup
+          - !Ref LambdaSecurityGroup
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
@@ -99,7 +98,6 @@ Resources:
           REGION: !Ref AWS::Region
           DATABASE: main
           SECRETARN: !Ref DBSecretArn
-      FunctionName: !Sub fn-${AWS::StackName}
       Handler: cr_add_users_noproxy.handler
       Layers:
         - !Ref LayerVersionArn
@@ -109,7 +107,7 @@ Resources:
       Tracing: Active
       VpcConfig:
         SecurityGroupIds:
-          - !Ref LamdaSecurityGroup
+          - !Ref LambdaSecurityGroup
         SubnetIds:
           - !Ref PrivateSubnet1
           - !Ref PrivateSubnet2
@@ -202,7 +200,7 @@ Resources:
         - !Ref LambdaAddUsersRole
     Condition: IsRDSProxy
 
-  LamdaSecurityGroup:
+  LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
       GroupDescription: Lambda Security Group
@@ -226,7 +224,7 @@ Resources:
       Description: Lambda to RDS ingress rule
       FromPort: 3306
       GroupId: !Ref RDSSecurityGroup
-      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      SourceSecurityGroupId: !Ref LambdaSecurityGroup
       ToPort: 3306
 
   LambdaToProxyIngress:
@@ -236,6 +234,6 @@ Resources:
       Description: Lambda to Proxy ingress rule
       FromPort: 3306
       GroupId: !Ref ProxySecurityGroup
-      SourceSecurityGroupId: !Ref LamdaSecurityGroup
+      SourceSecurityGroupId: !Ref LambdaSecurityGroup
       ToPort: 3306
     Condition: IsRDSProxy

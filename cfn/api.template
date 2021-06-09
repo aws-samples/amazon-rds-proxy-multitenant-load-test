@@ -28,11 +28,7 @@ Resources:
   VPCEndpointSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: The Security Group attached to the VPC Endpoint in the Load Test VPC that restricts traffic entering from the Load Test VPC into the Proxy and No Proxy VPCs. Traffic from the Amazon API Gateway enters this endpoint.
-      SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all outbound traffic by default
-          IpProtocol: "-1"
+      GroupDescription: The Security Group attached to the VPC Endpoint in the Load Test VPC that restricts traffic entering from the Load Test VPC into the Proxy and No Proxy VPCs.
       SecurityGroupIngress:
         - CidrIp: !Ref VpcCidrBlock
           Description: !Join
@@ -43,6 +39,10 @@ Resources:
           FromPort: 443
           IpProtocol: tcp
           ToPort: 443
+      SecurityGroupEgress:
+        - CidrIp: 127.0.0.1/32
+          Description: Limits security group egress traffic to localhost
+          IpProtocol: "-1"
       Tags:
         - Key: Name
           Value: loadtest/load_test_vpc
@@ -176,3 +176,6 @@ Resources:
 Outputs:
   ApiGatewayURL:
     Value: !Sub https://${LoadTestApi}.execute-api.${AWS::Region}.amazonaws.com
+
+  VPCEndpointSecurityGroup:
+    Value: !Ref VPCEndpointSecurityGroup

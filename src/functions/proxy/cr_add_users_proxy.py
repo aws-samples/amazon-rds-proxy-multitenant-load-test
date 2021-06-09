@@ -13,29 +13,33 @@ logger = logging.getLogger(__name__)
 helper = CfnResource(
     json_logging=False, log_level="DEBUG", boto_level="CRITICAL", sleep_on_delete=120
 )
-secretsmanager = boto3.client("secretsmanager")
-rds = boto3.client("rds")
 
-ENDPOINT = os.environ["ENDPOINT"]
-PORT = "3306"
-USR = os.environ["USER"]
-NUMBER_OF_USERS = os.environ["USERS_TO_CREATE"]
-NUMBER_OF_ROWS = os.environ["NUMBER_OF_ROWS"]
-REGION = os.environ["REGION"]
-DBNAME = os.environ["DATABASE"]
-PROXY_NAME = os.environ["PROXY_NAME"]
-os.environ["LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN"] = "1"
-secret_arn = os.environ["SECRETARN"]
+try:
+    secretsmanager = boto3.client("secretsmanager")
+    rds = boto3.client("rds")
 
-alphabet = string.ascii_letters + string.digits
-passwords = [
-    "".join(secrets.choice(alphabet) for n in range(32))
-    for i in range(int(NUMBER_OF_USERS))
-]
+    ENDPOINT = os.environ["ENDPOINT"]
+    PORT = "3306"
+    USR = os.environ["USER"]
+    NUMBER_OF_USERS = os.environ["USERS_TO_CREATE"]
+    NUMBER_OF_ROWS = os.environ["NUMBER_OF_ROWS"]
+    REGION = os.environ["REGION"]
+    DBNAME = os.environ["DATABASE"]
+    PROXY_NAME = os.environ["PROXY_NAME"]
+    os.environ["LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN"] = "1"
+    secret_arn = os.environ["SECRETARN"]
 
-secret_tags = [
-    {"Key": "Project", "Value": "Proxy"},
-]
+    alphabet = string.ascii_letters + string.digits
+    passwords = [
+        "".join(secrets.choice(alphabet) for n in range(32))
+        for i in range(int(NUMBER_OF_USERS))
+    ]
+
+    secret_tags = [
+        {"Key": "Project", "Value": "Proxy"},
+    ]
+except Exception as e:
+    helper.init_failure(e)
 
 
 @helper.create
@@ -61,7 +65,7 @@ def create(event, context):
             dbname = "user_database" + str(i)
             query1 = f"CREATE USER {dbusername} IDENTIFIED BY '{passwords[i]}';"
             query2 = f"CREATE DATABASE {dbname};"
-            query3 = f"GRANT ALL PRIVILEGES ON {dbname}.* TO {dbusername};"
+            query3 = f"GRANT CREATE VIEW, SHOW VIEW, SELECT, INSERT, UPDATE ON {dbname}.* TO {dbusername};"
             query4 = f"USE {dbname}"
             query5 = f"CREATE TABLE mytable (ID INT AUTO_INCREMENT PRIMARY KEY, Column_A VARCHAR(10), Column_B VARCHAR(10), Column_C VARCHAR(10), Column_D VARCHAR(10), Column_E VARCHAR(10));"
             insert_query = [
@@ -109,7 +113,9 @@ def create(event, context):
         print("Success")
 
     except Exception as e:
-        print("Connection failed due to {}".format(e))
+        error_statement = "Database connection failed due to {}".format(e)
+        print(error_statement)
+        raise Exception(error_statement)
 
     return helper.PhysicalResourceId
 

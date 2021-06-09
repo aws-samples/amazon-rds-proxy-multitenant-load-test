@@ -359,8 +359,8 @@ Resources:
         LambdaRuntimeEnv: !Ref LambdaRuntimeEnv
         LayerVersionArn: !If
           - IsPython
-          - !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
-          - !GetAtt NoProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
+          - !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
+          - !GetAtt ProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
         Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterReaderEndpoint
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA
@@ -448,6 +448,7 @@ Resources:
     Properties:
       TemplateURL: ec2.template
       Parameters:
+        VpcCidrBlock: !GetAtt LoadTestVPCStack.Outputs.VpcCidrBlock
         VpcID: !GetAtt LoadTestVPCStack.Outputs.VpcID
         SubnetID: !GetAtt LoadTestVPCStack.Outputs.PublicSubnet1
         InstanceAMI: !Ref LocustAmiId
@@ -455,6 +456,8 @@ Resources:
         LocustVersion: !Ref LocustVersion
         SecondaryInstanceCapacity: !Ref LocustSecondaryInstanceCapacity
         CIDRRange: !Ref CIDRRange
+        UsersToCreate: !Ref UsersToCreate
+        VPCEndpointSecurityGroup: !GetAtt ApiStack.Outputs.VPCEndpointSecurityGroup
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]

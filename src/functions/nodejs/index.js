@@ -80,26 +80,36 @@ exports.handler = async (event) => {
         });
     });
 
-    const connection = await mysql.createConnection({
-        host     : dbHost,
-        user     : dbUser,
-        ssl: 'Amazon RDS',
-        password : dbToken,
-        port: dbPort,
-        database: database,
-        authSwitchHandler: function (data, cb) { // modifies the authentication handler
-            if (data.pluginName === 'mysql_clear_password') { // authentication token is sent in clear text but connection uses SSL encryption
-                cb(null, Buffer.from(dbToken + '\0'));
+    try {
+        const connection = await mysql.createConnection({
+            host     : dbHost,
+            user     : dbUser,
+            ssl: 'Amazon RDS',
+            password : dbToken,
+            port: dbPort,
+            database: database,
+            authSwitchHandler: function (data, cb) { // modifies the authentication handler
+                if (data.pluginName === 'mysql_clear_password') { // authentication token is sent in clear text but connection uses SSL encryption
+                    cb(null, Buffer.from(dbToken + '\0'));
+                }
             }
-        }
-    });
+        });
 
-    const result = await connection.query(query);
-    var result2 = result[0];
-    connection.end();
-    const response = {
-        statusCode: 200,
-        body: JSON.stringify(result2),
-    };
-    return response;
+        const result = await connection.query(query);
+        var result2 = result[0];
+        connection.end();
+        const response = {
+            statusCode: 200,
+            body: JSON.stringify(result2),
+        };
+        console.log(response);
+        return response;
+    } catch(e){
+        console.log(e);
+        const response = {
+            statusCode: 500,
+            body: "Internal Server Error",
+        };
+        return response;
+    }
 };
