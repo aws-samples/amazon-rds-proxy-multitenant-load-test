@@ -3,6 +3,9 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Creates a EC2 with Locust load test App.
 
 Parameters:
+  VpcCidrBlock:
+    Type: String
+
   VpcID:
     Type: AWS::EC2::VPC::Id
 
@@ -24,6 +27,12 @@ Parameters:
   CIDRRange:
     Type: String
 
+  UsersToCreate:
+    Type: Number
+
+  VPCEndpointSecurityGroup:
+    Type: AWS::EC2::SecurityGroup::Id
+
 Conditions:
   IsLatestVersion: !Equals [!Ref LocustVersion, latest]
 
@@ -33,16 +42,16 @@ Resources:
     Properties:
       GroupDescription: loadtest/primarySecurityGroup
       SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all https outbound traffic
-          IpProtocol: tcp
+        - CidrIp: !Ref VpcCidrBlock
+          Description: Allow outbound 443 traffic to within the VPC
           FromPort: 443
+          IpProtocol: tcp
           ToPort: 443
         - CidrIp: 0.0.0.0/0
-          Description: Allow all http outbound traffic
+          Description: Allow all outbound 443 traffic
+          FromPort: 443
           IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
+          ToPort: 443
         - CidrIp: 169.254.169.253/32
           Description: Allow dns outbound traffic to Amazon provided DNS server
           IpProtocol: tcp
@@ -66,21 +75,21 @@ Resources:
     Properties:
       GroupDescription: loadtest/secondarySecurityGroup
       SecurityGroupEgress:
+        - CidrIp: 0.0.0.0/0
+          Description: Allow outbound 443 traffic to within the VPC
+          FromPort: 443
+          IpProtocol: tcp
+          ToPort: 443
         - DestinationSecurityGroupId: !Ref PrimarySecurityGroup
           Description: Allow outbound traffic to primary node
           IpProtocol: tcp
           FromPort: 5557
           ToPort: 5557
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all https outbound traffic
+        - DestinationSecurityGroupId: !Ref VPCEndpointSecurityGroup
+          Description: Allow outbound traffic to VPC Endpoint
           IpProtocol: tcp
           FromPort: 443
           ToPort: 443
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all http outbound traffic
-          IpProtocol: tcp
-          FromPort: 80
-          ToPort: 80
       VpcId: !Ref VpcID
 
   PrimarySecurityGroupFromSecondarySecurityGroup:
@@ -182,18 +191,18 @@ Resources:
         app_install:
           files:
             /locustfile.py:
-              content: |
+              content: !Sub |
                 import random
                 from locust import HttpUser, task, between
                 class MyLoadTest(HttpUser):
                     wait_time = between(5, 9)
                     @task(1)
                     def without_proxy(self):
-                        to_get = "/no_proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        to_get = "/no_proxy_stage?tenant=%d" % (random.randint(0, int(${UsersToCreate})-1))
                         self.client.get(to_get, name='noproxy')
                     @task(1)
                     def with_proxy(self):
-                        to_get = "/proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        to_get = "/proxy_stage?tenant=%d" % (random.randint(0, int(${UsersToCreate})-1))
                         self.client.get(to_get, name='proxy')
               mode: "000755"
               owner: root
@@ -281,18 +290,18 @@ Resources:
         app_install:
           files:
             /locustfile.py:
-              content: |
+              content: !Sub |
                 import random
                 from locust import HttpUser, task, between
                 class MyLoadTest(HttpUser):
                     wait_time = between(5, 9)
                     @task(1)
                     def without_proxy(self):
-                        to_get = "/no_proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        to_get = "/no_proxy_stage?tenant=%d" % (random.randint(0, int(${UsersToCreate})-1))
                         self.client.get(to_get, name='noproxy')
                     @task(1)
                     def with_proxy(self):
-                        to_get = "/proxy_stage?tenant=%d" % (random.randint(0, 199))
+                        to_get = "/proxy_stage?tenant=%d" % (random.randint(0, int(${UsersToCreate})-1))
                         self.client.get(to_get, name='proxy')
               mode: "000755"
               owner: root

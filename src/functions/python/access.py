@@ -24,16 +24,16 @@ def lambda_handler(event, context):
     # tenant id
     tenant_id = event["queryStringParameters"]["tenant"]
     dbUser = user_name + tenant_id
-    # dbUser = 'user100';
+    # dbUser = 'user100'
 
     # database
     database = database_name + tenant_id
-    # database = 'user_database100';
+    # database = 'user_database100'
 
     # Resource name
     resource_a = os.environ["CLUSTER_ENDPOINT_RESOURCE"]
     resource = resource_a + tenant_id
-    # resource = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user100';
+    # resource = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user100'
 
     arn = os.environ["IAM_ARN"]
 
@@ -71,11 +71,10 @@ def lambda_handler(event, context):
         cur.execute(query)
         query_results = cur.fetchall()
         print(query_results)
+        cur.close()
 
         return {"statusCode": 200, "body": json.dumps(query_results)}
 
     except Exception as e:
-        print("Database connection failed due to {}".format(e))
-        query_results = "Database connection failed due to {}".format(e)
-
-        return query_results
+        print(e)
+        return {"statusCode": 500, "body": "Internal Server Error"}

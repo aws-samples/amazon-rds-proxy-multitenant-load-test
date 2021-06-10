@@ -75,14 +75,14 @@ Resources:
     Type: AWS::RDS::DBInstance
     Properties:
       DBInstanceClass: !Ref DBWriterInstanceClass
-      EnablePerformanceInsights: true
-      PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
       DBClusterIdentifier: !Ref DBCluster
       Engine: aurora-mysql
       PubliclyAccessible: false
 
   DBReaderInstance1:
     Type: AWS::RDS::DBInstance
+    DependsOn:
+      - DBWriterInstance
     Properties:
       DBInstanceClass: !Ref DBReaderInstanceClass
       EnablePerformanceInsights: true
@@ -93,6 +93,8 @@ Resources:
 
   DBReaderInstance2:
     Type: AWS::RDS::DBInstance
+    DependsOn:
+      - DBWriterInstance
     Properties:
       DBInstanceClass: !Ref DBReaderInstanceClass
       EnablePerformanceInsights: true
@@ -115,11 +117,9 @@ Resources:
     Properties:
       GroupDescription: RDS Security Group
       SecurityGroupEgress:
-        - CidrIp: 0.0.0.0/0
-          Description: Allow all db outbound traffic
-          IpProtocol: tcp
-          FromPort: 3306
-          ToPort: 3306
+        - CidrIp: 127.0.0.1/32
+          Description: Limits security group egress traffic to localhost
+          IpProtocol: "-1"
       VpcId: !Ref VpcID
 
   DBProxy:
@@ -143,7 +143,7 @@ Resources:
   ProxyReaderEndpoint:
     Type: AWS::RDS::DBProxyEndpoint
     Properties:
-      DBProxyEndpointName: ProxyReaderEndpoint
+      DBProxyEndpointName: proxy-reader-endpoint
       DBProxyName: !Ref DBProxy
       VpcSubnetIds:
         - !Ref PrivateSubnet1

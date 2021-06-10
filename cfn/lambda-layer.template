@@ -33,7 +33,6 @@ Resources:
       CompatibleRuntimes:
         - nodejs14.x
         - nodejs12.x
-        - nodejs10.x
       RetentionPolicy: Delete
     Condition: IsNodeJs
 
