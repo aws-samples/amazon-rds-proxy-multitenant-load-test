@@ -54,7 +54,7 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 |---------------|-------|-----------|
 |CreateLoadTest|true|If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.|
 |AvailabilityZones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.|
-|DBWriterClass|db.t3.small|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.m5.large.|
+|DBWriterClass|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.t3.medium.|
 |DBReaderClass|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
 |PerformanceInsightsRetentionPeriod|7|The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).|
 |LambdaRuntimeEnv|Node.js|The runtime for Lambda access Function/Layer.|
