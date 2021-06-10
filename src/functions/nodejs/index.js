@@ -5,8 +5,8 @@ var user_name = 'user';
 var database_name = 'user_database';
 var AWS = require('aws-sdk');
 var dbPort = 3306;
-var dbRegion = process.env['region'];
-var dbHost = process.env['endpoint'];
+var dbRegion = process.env['REGION'];
+var dbHost = process.env['ENDPOINT'];
 
 
 exports.handler = async (event) => {
@@ -28,11 +28,11 @@ exports.handler = async (event) => {
     // var database = 'user_database100';
 
     // Resource name
-    var resource_a = process.env['cluster_endpoint_resource'];
+    var resource_a = process.env['CLUSTER_ENDPOINT_RESOURCE'];
     var resource = resource_a.concat(tenant_id);
     // var resource = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user100';
 
-    var arn = process.env['iam_arn'];
+    var arn = process.env['IAM_ARN'];
 
     var session_policy = {
         "Version": "2012-10-17",
@@ -101,7 +101,5 @@ exports.handler = async (event) => {
         statusCode: 200,
         body: JSON.stringify(result2),
     };
-    console.log(dbUser);
-    console.log(response);
     return response;
 };

@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: Builds Amazon RDS with Proxy (uksb-1rkqqff0c).
+Description: Builds Amazon RDS Proxy with a Load Test (uksb-1rkqqff0c).
 
 Metadata:
   Version: 0.0.1
@@ -14,7 +14,8 @@ Metadata:
       - Label:
           default: Main configuration
         Parameters:
-          - DBInstanceClass
+          - DBReaderInstanceClass
+          - DBWriterInstanceClass
           - PerformanceInsightsRetentionPeriod
           - LambdaRuntimeEnv
           - Environment
@@ -29,12 +30,14 @@ Metadata:
           - LocustVersion
           - LocustSecondaryInstanceCapacity
           - ApiEndpointType
-          - OnPremIp
+          - CIDRRange
     ParameterLabels:
       AvailabilityZones:
         default: Availability Zones
-      DBInstanceClass:
-        default: Database Instance Class
+      DBReaderInstanceClass:
+        default: Database Reader Instance Class
+      DBWriterInstanceClass:
+        default: Database Writer Instance Class
       PerformanceInsightsRetentionPeriod:
         deafult: Performance Insights Retention Period
       LambdaRuntimeEnv:
@@ -55,7 +58,7 @@ Metadata:
         deafult: Locust Worker Instances
       ApiEndpointType:
         default: API Endpoint Type
-      OnPremIp:
+      CIDRRange:
         default: ISP/Public IPv4
       EnableFlowLogs:
         default: Flow Logs
@@ -81,10 +84,15 @@ Parameters:
     Description: The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.
     Type: List<AWS::EC2::AvailabilityZone::Name>
 
-  DBInstanceClass:
-    Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora instances, for example db.m5.large.
+  DBReaderInstanceClass:
+    Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.
     Type: String
     Default: db.r5.large
+
+  DBWriterInstanceClass:
+    Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.m5.large.
+    Type: String
+    Default: db.t3.medium
 
   PerformanceInsightsRetentionPeriod:
     Description: The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).
@@ -92,7 +100,7 @@ Parameters:
     Default: 7
 
   LambdaRuntimeEnv:
-    Description: The runtime for Lambda access Function/Layer.
+    Description: The runtime for Lambda access Function/Layer. Valid values are (Python, Nodejs)
     Type: String
     AllowedValues:
       - Python
@@ -128,10 +136,9 @@ Parameters:
       - PRIVATE
     Default: PRIVATE
 
-  OnPremIp:
-    Description: The CIDR block of an on-premise IP address. This limits the CIDR range from which the Locust dashboard can be accessed.
+  CIDRRange:
+    Description: The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed. You can use an open CIDR range (e.g. 0.0.0.0/0) to access from anywhere, but this is not recommended.
     Type: String
-    Default: 0.0.0.0/0
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/0-32
 
@@ -258,7 +265,8 @@ Resources:
         VpcID: !GetAtt ProxyVPCStack.Outputs.VpcID
         PrivateSubnet1: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet1
         PrivateSubnet2: !GetAtt ProxyVPCStack.Outputs.PrivateSubnet2
-        DBInstanceClass: !Ref DBInstanceClass
+        DBReaderInstanceClass: !Ref DBReaderInstanceClass
+        DBWriterInstanceClass: !Ref DBWriterInstanceClass
         PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
         CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
         LayerVersionArn: !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
@@ -279,7 +287,8 @@ Resources:
         VpcID: !GetAtt NoProxyVPCStack.Outputs.VpcID
         PrivateSubnet1: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet1
         PrivateSubnet2: !GetAtt NoProxyVPCStack.Outputs.PrivateSubnet2
-        DBInstanceClass: !Ref DBInstanceClass
+        DBReaderInstanceClass: !Ref DBReaderInstanceClass
+        DBWriterInstanceClass: !Ref DBWriterInstanceClass
         PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
         LayerVersionArn: !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
@@ -445,7 +454,7 @@ Resources:
         InstanceType: !Ref LocustInstanceType
         LocustVersion: !Ref LocustVersion
         SecondaryInstanceCapacity: !Ref LocustSecondaryInstanceCapacity
-        OnPremIp: !Ref OnPremIp
+        CIDRRange: !Ref CIDRRange
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]

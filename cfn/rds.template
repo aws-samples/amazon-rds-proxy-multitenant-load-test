@@ -15,7 +15,10 @@ Parameters:
   PrivateSubnet2:
     Type: AWS::EC2::Subnet::Id
 
-  DBInstanceClass:
+  DBReaderInstanceClass:
+    Type: String
+
+  DBWriterInstanceClass:
     Type: String
 
   PerformanceInsightsRetentionPeriod:
@@ -71,7 +74,7 @@ Resources:
   DBWriterInstance:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceClass: !Ref DBInstanceClass
+      DBInstanceClass: !Ref DBWriterInstanceClass
       EnablePerformanceInsights: true
       PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
       DBClusterIdentifier: !Ref DBCluster
@@ -81,7 +84,7 @@ Resources:
   DBReaderInstance1:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceClass: !Ref DBInstanceClass
+      DBInstanceClass: !Ref DBReaderInstanceClass
       EnablePerformanceInsights: true
       PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
       DBClusterIdentifier: !Ref DBCluster
@@ -91,7 +94,7 @@ Resources:
   DBReaderInstance2:
     Type: AWS::RDS::DBInstance
     Properties:
-      DBInstanceClass: !Ref DBInstanceClass
+      DBInstanceClass: !Ref DBReaderInstanceClass
       EnablePerformanceInsights: true
       PerformanceInsightsRetentionPeriod: !Ref PerformanceInsightsRetentionPeriod
       DBClusterIdentifier: !Ref DBCluster

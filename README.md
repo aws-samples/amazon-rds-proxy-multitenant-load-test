@@ -54,7 +54,8 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 |---------------|-------|-----------|
 |CreateLoadTest|true|If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.|
 |AvailabilityZones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.|
-|DBInstanceClass|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora instances, for example db.m5.large.|
+|DBWriterClass|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.t3.medium.|
+|DBReaderClass|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
 |PerformanceInsightsRetentionPeriod|7|The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).|
 |LambdaRuntimeEnv|Node.js|The runtime for Lambda access Function/Layer.|
 |LocustAmiId|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from Systems Manager Parameter Store.|
@@ -62,7 +63,7 @@ template are pre-populated. Click the *Next* button at the bottom of the page.
 |LocustVersion|latest|The Locust version to deploy.|
 |LocustSecondaryInstanceCapacity|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
 |ApiEndpointType|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
-|OnPremIp|0.0.0.0/0|The CIDR block of an on-premise IP address. This limits the CIDR range from which the Locust dashboard can be accessed.|
+|CIDRRange|Requires input|The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
 |Environment|DEV|The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).|
 |EnableFlowLogs|false|Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.|
 
@@ -92,6 +93,57 @@ To remove the stack:
 1. Click the *aws-multitenant-rds-proxy* project, right-click and select "*Delete Stack*"
 1. Your stack will take some time to be deleted. You can track its progress in the "Events" tab.
 1. When it is done, the status will change from "DELETE_IN_PROGRESS" to "DELETE_COMPLETE". It will then disappear from the list.
+
+## Detailed Pricing
+This sample is intended to be deployed only for as long as is strictly necessary, to avoid incurring additional costs. As soon as the load test is completed, the stack should be destroyed (see 'Clean up' above). Note that all pricing is estimated based on the us-east-1 region, and without the Free Tier.
+
+Assuming a 150 request per second load test for 30 minutes, the price breakdown is estimated as follows:
+
+|Service|Cost|Description|
+|---------------|-------|-----------|
+|Amazon Aurora MySQL| $0.45 |2x db.r5.large and 1x db.t3.medium database instances running continuously, 150 RPS.|
+|Amazon RDS Proxy| $0.02 |Based on 2 vCPUs of db.r5.large, running continuously.|
+|Amazon EC2| $0.14 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $0.01 |CloudWatch dashboard + 20 metrics.|
+|AWS X-Ray| $0.07 |150 Traces Per Second, with a 5% sampling rate.|
+|AWS Secrets Manager| $0.73 |200 secrets, and 75 API calls per second.|
+|AWS Lambda| $1.22 |150 RPS, assuming 2000ms duration per request.|
+|Amazon API Gateway| $0.93 |150RPS to the REST API type.|
+|AWS Private Link| $0.01 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month.|
+|Data Transfer| $0.00 |170Gb transfer between AZs.|
+|Total| $3.54 |Total.|
+
+Assuming a 150 request per second load test for 4 hours, the price breakdown is estimated as follows:
+
+|Service|Cost|Description|
+|---------------|-------|-----------|
+|Amazon Aurora MySQL| $3.57 |2x db.r5.large and 1x db.t3.medium database instances running continuously, 150 RPS.|
+|Amazon RDS Proxy| $0.12 |Based on 2 vCPUs of db.r5.large, running continuously.|
+|Amazon EC2| $1.08 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $0.07 |CloudWatch dashboard + 20 metrics.|
+|AWS X-Ray| $0.56 |150 Traces Per Second, with a 5% sampling rate.|
+|AWS Secrets Manager| $5.84 |200 secrets, and 75 API calls per second.|
+|AWS Lambda| $9.75 |150 RPS, assuming 2000ms duration per request.|
+|Amazon API Gateway| $7.43 |150RPS to the REST API type.|
+|AWS Private Link| $0.09 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month.|
+|Data Transfer| $0.02 |170Gb transfer between AZs.|
+|Total| $28.36 |Total.|
+
+The above pricing examples (excluding the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=190761b4bcd88d44463b587a5dbc3c1884d54494).
+
+Assuming the resources are deployed for a month, without a load test (all of the resources are running, except Locust), the price breakdown is estimated as follows:
+
+|Service|Cost|Description|
+|---------------|-------|-----------|
+|Amazon Aurora MySQL| $485.38 |2x db.r5.large and 1x db.t3.medium database instances running continuously.|
+|Amazon RDS Proxy| $21.60 |Based on 2 vCPUs of db.r5.large, running continuously.|
+|Amazon EC2| $195.15 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $12.00 |CloudWatch dashboard + 20 metrics.|
+|AWS Secrets Manager| $80.00 |200 secrets.|
+|AWS Private Link| $14.60 |Interface VPC endpoint for API Gateway, 2AZs.|
+|Total| $778.80 |Total.|
+
+The above pricing example (excluding the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=26b0935e037cc8a093262f366cc30f285f99820b).
 
 ## Contributing
 

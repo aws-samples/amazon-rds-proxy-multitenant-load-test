@@ -38,6 +38,7 @@ deploy: package
 	  --capabilities CAPABILITY_NAMED_IAM CAPABILITY_AUTO_EXPAND \
 	  --parameter-overrides \
 	  	CreateLoadTest=$(LOAD_TEST) \
+		CIDRRange=$(CIDR_RANGE) \
 	  	AvailabilityZones=$(AWS_REGION)a,$(AWS_REGION)b \
 	  	LambdaRuntimeEnv=$(LAMBDA_RUNTIME_ENV) \
 	  	EnableFlowLogs=$(ENABLE_FLOW_LOGS)

@@ -57,7 +57,7 @@ Resources:
           ENDPOINT: !Ref Endpoint
           USER: admin
           USERS_TO_CREATE: !Ref UsersToCreate
-          REGION: !Sub ${AWS::Region}
+          REGION: !Ref AWS::Region
           SECRETARN: !Ref DBSecretArn
           DATABASE: main
           NUMBER_OF_ROWS: 1000
@@ -96,7 +96,7 @@ Resources:
           USER: admin
           USERS_TO_CREATE: !Ref UsersToCreate
           NUMBER_OF_ROWS: 1000
-          REGION: !Sub ${AWS::Region}
+          REGION: !Ref AWS::Region
           DATABASE: main
           SECRETARN: !Ref DBSecretArn
       FunctionName: !Sub fn-${AWS::StackName}
