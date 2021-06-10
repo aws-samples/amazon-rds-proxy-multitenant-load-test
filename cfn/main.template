@@ -359,8 +359,8 @@ Resources:
         LambdaRuntimeEnv: !Ref LambdaRuntimeEnv
         LayerVersionArn: !If
           - IsPython
-          - !GetAtt ProxyLayerVersionStack.Outputs.PythonLambdaLayer
-          - !GetAtt ProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
+          - !GetAtt NoProxyLayerVersionStack.Outputs.PythonLambdaLayer
+          - !GetAtt NoProxyLayerVersionStack.Outputs.NodeJsLambdaLayer
         Endpoint: !GetAtt NoProxyRDSStack.Outputs.ClusterReaderEndpoint
         RDSSecurityGroup: !GetAtt NoProxyRDSStack.Outputs.RDSSecurityGroup
         ProxySecurityGroup: NA

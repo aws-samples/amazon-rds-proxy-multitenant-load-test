@@ -14,32 +14,29 @@ helper = CfnResource(
     json_logging=False, log_level="DEBUG", boto_level="CRITICAL", sleep_on_delete=120
 )
 
-try:
-    secretsmanager = boto3.client("secretsmanager")
-    rds = boto3.client("rds")
+secretsmanager = boto3.client("secretsmanager")
+rds = boto3.client("rds")
 
-    ENDPOINT = os.environ["ENDPOINT"]
-    PORT = "3306"
-    USR = os.environ["USER"]
-    NUMBER_OF_USERS = os.environ["USERS_TO_CREATE"]
-    NUMBER_OF_ROWS = os.environ["NUMBER_OF_ROWS"]
-    REGION = os.environ["REGION"]
-    DBNAME = os.environ["DATABASE"]
-    PROXY_NAME = os.environ["PROXY_NAME"]
-    os.environ["LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN"] = "1"
-    secret_arn = os.environ["SECRETARN"]
+ENDPOINT = os.environ["ENDPOINT"]
+PORT = "3306"
+USR = os.environ["USER"]
+NUMBER_OF_USERS = os.environ["USERS_TO_CREATE"]
+NUMBER_OF_ROWS = os.environ["NUMBER_OF_ROWS"]
+REGION = os.environ["REGION"]
+DBNAME = os.environ["DATABASE"]
+PROXY_NAME = os.environ["PROXY_NAME"]
+os.environ["LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN"] = "1"
+secret_arn = os.environ["SECRETARN"]
 
-    alphabet = string.ascii_letters + string.digits
-    passwords = [
-        "".join(secrets.choice(alphabet) for n in range(32))
-        for i in range(int(NUMBER_OF_USERS))
-    ]
+alphabet = string.ascii_letters + string.digits
+passwords = [
+    "".join(secrets.choice(alphabet) for n in range(32))
+    for i in range(int(NUMBER_OF_USERS))
+]
 
-    secret_tags = [
-        {"Key": "Project", "Value": "Proxy"},
-    ]
-except Exception as e:
-    helper.init_failure(e)
+secret_tags = [
+    {"Key": "Project", "Value": "Proxy"},
+]
 
 
 @helper.create
