@@ -184,6 +184,8 @@ Mappings:
       PrivateSubnet1Cidr: 10.2.2.0/24
       PrivateSubnet2Cidr: 10.2.3.0/24
       ResourceTags: rds-load-test
+    RolesMap:
+      ResourceTags: rds-iam
 
 Conditions:
   IsLoadTest: !Equals [!Ref CreateLoadTest, true]
@@ -528,4 +530,9 @@ Outputs:
   DashboardName:
     Description: CLoudWatch dashboard.
     Value: !GetAtt DashboardStack.Outputs.LoadTestDashboard
+    Condition: IsLoadTest
+
+  APIGatewayLogGroupName:
+    Description: The CloudWatch Group for load test API Gateway
+    Value: !GetAtt ApiStack.Outputs.APIGatewayLogGroupName
     Condition: IsLoadTest
