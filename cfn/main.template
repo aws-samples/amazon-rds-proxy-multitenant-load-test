@@ -184,8 +184,6 @@ Mappings:
       PrivateSubnet1Cidr: 10.2.2.0/24
       PrivateSubnet2Cidr: 10.2.3.0/24
       ResourceTags: rds-load-test
-    RolesMap:
-      ResourceTags: rds-iam
 
 Conditions:
   IsLoadTest: !Equals [!Ref CreateLoadTest, true]
