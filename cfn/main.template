@@ -529,3 +529,8 @@ Outputs:
     Description: CLoudWatch dashboard.
     Value: !GetAtt DashboardStack.Outputs.LoadTestDashboard
     Condition: IsLoadTest
+
+  APIGatewayLogGroupName:
+    Description: The CloudWatch Group for load test API Gateway
+    Value: !GetAtt ApiStack.Outputs.APIGatewayLogGroupName
+    Condition: IsLoadTest

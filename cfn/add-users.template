@@ -34,7 +34,7 @@ Parameters:
     Type: String
 
   ProxySecurityGroup:
-    Type: String # Has to be type String as NoProxy has 'NA' value
+    Type: String
 
   UsersToCreate:
     Type: Number
@@ -49,6 +49,12 @@ Transform: AWS::Serverless-2016-10-31
 Resources:
   ProxyLambdaFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - XraySeviceAccessPolicy
+      - CloudWatchLogsSeviceAccessPolicy
+      - VPCSeviceAccessPolicy
+      - SecretsManagerSeviceAccessPolicy
+      - DBProxyPolicy
     Properties:
       CodeUri: ../src/functions/proxy
       Description: Tenant add data function.
@@ -86,6 +92,11 @@ Resources:
 
   NoProxyLambdaFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - XraySeviceAccessPolicy
+      - CloudWatchLogsSeviceAccessPolicy
+      - VPCSeviceAccessPolicy
+      - SecretsManagerSeviceAccessPolicy
     Properties:
       CodeUri: ../src/functions/noproxy
       Description: Tenant add data function.
@@ -119,86 +130,6 @@ Resources:
       ServiceToken: !GetAtt NoProxyLambdaFunction.Arn
     Version: "1.0"
     Condition: NoRDSProxy
-
-  LambdaAddUsersRole:
-    Type: AWS::IAM::Role
-    Properties:
-      AssumeRolePolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Principal:
-              Service: lambda.amazonaws.com
-            Action: sts:AssumeRole
-      Policies:
-        - PolicyName: XraySeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              Effect: Allow
-              Action:
-                - xray:PutTraceSegments
-                - xray:PutTelemetryRecords
-                - xray:GetSamplingRules
-                - xray:GetSamplingTargets
-                - xray:GetSamplingStatisticSummaries
-              Resource: '*'
-        - PolicyName: CloudWatchLogsSeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource:
-                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*
-                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*
-        - PolicyName: VPCSeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:DescribeNetworkInterfaces
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - ec2:CreateNetworkInterface
-                  - ec2:DeleteNetworkInterface
-                  - ec2:AssignPrivateIpAddresses
-                  - ec2:UnassignPrivateIpAddresses
-                Resource: '*'
-        - PolicyName: SecretsManagerSeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - secretsmanager:GetSecretValue
-                Resource: !Ref DBSecretArn
-              - Effect: Allow
-                Action:
-                  - secretsmanager:CreateSecret
-                  - secretsmanager:DeleteSecret
-                  - secretsmanager:TagResource
-                Resource: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user*
-
-  DBProxyPolicy:
-    Type: AWS::IAM::Policy
-    Properties:
-      PolicyName: DBProxyServiceAccess
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Effect: Allow
-            Action:
-              - rds:ModifyDBProxy
-            Resource: !Ref DBProxyArn
-      Roles:
-        - !Ref LambdaAddUsersRole
-    Condition: IsRDSProxy
 
   LambdaSecurityGroup:
     Type: AWS::EC2::SecurityGroup
@@ -237,3 +168,106 @@ Resources:
       SourceSecurityGroupId: !Ref LambdaSecurityGroup
       ToPort: 3306
     Condition: IsRDSProxy
+
+  LambdaAddUsersRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: lambda.amazonaws.com
+            Action: sts:AssumeRole
+
+  XraySeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Add Users Lambda Function to access X-Ray. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Action:
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
+            - xray:GetSamplingRules
+            - xray:GetSamplingTargets
+            - xray:GetSamplingStatisticSummaries
+          Resource: '*'
+      Roles:
+        - !Ref LambdaAddUsersRole
+
+  CloudWatchLogsSeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Add Users Lambda Function to access CloudWatch logs. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource:
+            - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*
+            - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*
+      Roles:
+        - !Ref LambdaAddUsersRole
+
+  VPCSeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Add Users Lambda Function to create and delete network interfaces, and assign and unassign private IP addresses. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - ec2:DescribeNetworkInterfaces
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DeleteNetworkInterface
+              - ec2:AssignPrivateIpAddresses
+              - ec2:UnassignPrivateIpAddresses
+            Resource: '*'
+      Roles:
+        - !Ref LambdaAddUsersRole
+
+  DBProxyPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Add Users Lambda Function to modify RDS Proxy, in order to associate with it Secrets Manager secrets. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - rds:ModifyDBProxy
+            Resource: !Ref DBProxyArn
+      Roles:
+        - !Ref LambdaAddUsersRole
+    Condition: IsRDSProxy
+
+  SecretsManagerSeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Add Users Lambda Function to create, delete, and tag Secrets Manager Secrets with the correct ARN. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: !Ref DBSecretArn
+          - Effect: Allow
+            Action:
+              - secretsmanager:CreateSecret
+              - secretsmanager:DeleteSecret
+              - secretsmanager:TagResource
+            Resource: !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user*
+      Roles:
+        - !Ref LambdaAddUsersRole

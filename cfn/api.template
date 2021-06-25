@@ -69,7 +69,7 @@ Resources:
           - !Ref ApiEndpointType
         VpcEndpointIds:
           - !Ref VPCEndpoint
-      Name: LoadTestApi
+      Name: !Sub LoadTestApi-${AWS::StackName}
       Policy:
         Statement:
           - Action: execute-api:Invoke
@@ -130,9 +130,18 @@ Resources:
     Properties:
       RestApiId: !Ref LoadTestApi
 
+  LoadTestApiLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/apigateway/rdsproxyloadtestapi
+      RetentionInDays: 90
+
   NoProxyApiStage:
     Type: AWS::ApiGateway::Stage
     Properties:
+      AccessLogSetting:
+        DestinationArn: !GetAtt LoadTestApiLogGroup.Arn
+        Format: '{ "stage": "$context.stage" "request_id": "$context.requestId", "resource": "$context.resourcePath", "http_method": "$context.httpMethod", "status": "$context.status", "response_error": "$context.error.messageString", "request_time": "$context.requestTimeEpoch", "integration_latency": "$context.integration.latency", "source_ip": "$context.identity.sourceIp" }'
       RestApiId: !Ref LoadTestApi
       DeploymentId: !Ref NoProxyApiDeployment
       StageName: no_proxy_stage
@@ -150,6 +159,9 @@ Resources:
   ProxyApiStage:
     Type: AWS::ApiGateway::Stage
     Properties:
+      AccessLogSetting:
+        DestinationArn: !GetAtt LoadTestApiLogGroup.Arn
+        Format: '{ "stage": "$context.stage" "request_id": "$context.requestId", "resource": "$context.resourcePath", "http_method": "$context.httpMethod", "status": "$context.status", "response_error": "$context.error.messageString", "request_time": "$context.requestTimeEpoch", "integration_latency": "$context.integration.latency", "source_ip": "$context.identity.sourceIp" }'
       RestApiId: !Ref LoadTestApi
       DeploymentId: !Ref ProxyApiDeployment
       StageName: proxy_stage
@@ -179,3 +191,6 @@ Outputs:
 
   VPCEndpointSecurityGroup:
     Value: !Ref VPCEndpointSecurityGroup
+
+  APIGatewayLogGroupName:
+    Value: !Ref LoadTestApiLogGroup

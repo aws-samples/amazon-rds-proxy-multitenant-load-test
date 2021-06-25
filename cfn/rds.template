@@ -124,6 +124,8 @@ Resources:
 
   DBProxy:
     Type: AWS::RDS::DBProxy
+    DependsOn:
+      - SecretsManagerSeviceAccessPolicy
     Properties:
       Auth:
         - AuthScheme: SECRETS
@@ -186,19 +188,24 @@ Resources:
             Effect: Allow
             Principal:
               Service: rds.amazonaws.com
+    Condition: IsRDSProxy
+
+  SecretsManagerSeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows RDS Proxy to retrieve a secret from Secrets Manager with the correct ARN. Stack ${AWS::StackName}
+      PolicyDocument:
         Version: "2012-10-17"
-      Policies:
-        - PolicyName: SecretsManagerSeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Sid: GetSecretValue
-                Effect: Allow
-                Action:
-                  - secretsmanager:GetSecretValue
-                Resource:
-                  - !Ref DBSecret
-                  - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user*
+        Statement:
+          - Sid: GetSecretValue
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource:
+              - !Ref DBSecret
+              - !Sub arn:${AWS::Partition}:secretsmanager:${AWS::Region}:${AWS::AccountId}:secret:Amazon_rds_proxy_multitenant_load_test/Proxy_secret_for_user*
+      Roles:
+        - !Ref DBSecretsRole
     Condition: IsRDSProxy
 
   DBProxyTargetGroup:
@@ -220,6 +227,8 @@ Resources:
 
   DbClusterResourceIdFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - DescribeClustersPolicy
     Properties:
       Description: Get DB cluster id.
       Handler: cluster.handler
@@ -228,12 +237,19 @@ Resources:
       Layers:
         - !Ref LayerVersionArn
       Policies:
-        - Version: "2012-10-17"
-          Statement:
-            - Effect: Allow
-              Action:
-                - rds:DescribeDBClusters
-              Resource: !Sub arn:${AWS::Partition}:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBCluster}
+        - !Ref DescribeClustersPolicy
+
+  DescribeClustersPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the DescribeDBClusters permission for the Lambda function that retrieves the DB Cluster ID. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - rds:DescribeDBClusters
+            Resource: !Sub arn:${AWS::Partition}:rds:${AWS::Region}:${AWS::AccountId}:cluster:${DBCluster}
 
   DbClusterResourceIdCustom:
     Type: Custom::DbClusterResourceId

@@ -45,6 +45,11 @@ Transform: AWS::Serverless-2016-10-31
 Resources:
   PythonLambdaFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - XraySeviceAccessPolicy
+      - CloudWatchLogsSeviceAccessPolicy
+      - VPCSeviceAccessPolicy
+      - StsPermissionsLimitPolicy
     Properties:
       CodeUri: ../src/functions/python
       Description: Tenant data access function.
@@ -73,6 +78,11 @@ Resources:
 
   NodeJsLambdaFunction:
     Type: AWS::Serverless::Function
+    DependsOn:
+      - XraySeviceAccessPolicy
+      - CloudWatchLogsSeviceAccessPolicy
+      - VPCSeviceAccessPolicy
+      - StsPermissionsLimitPolicy
     Properties:
       CodeUri: ../src/functions/nodejs
       Description: Tenant data access function.
@@ -150,46 +160,6 @@ Resources:
             Principal:
               Service: lambda.amazonaws.com
             Action: sts:AssumeRole
-      Policies:
-        - PolicyName: XraySeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              Effect: Allow
-              Action:
-                - xray:PutTraceSegments
-                - xray:PutTelemetryRecords
-                - xray:GetSamplingRules
-                - xray:GetSamplingTargets
-                - xray:GetSamplingStatisticSummaries
-              Resource: '*'
-        - PolicyName: CloudWatchLogsSeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              Effect: Allow
-              Action:
-                - logs:CreateLogGroup
-                - logs:CreateLogStream
-                - logs:PutLogEvents
-              Resource:
-                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*
-                - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*
-        - PolicyName: VPCSeviceAccess
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action:
-                  - ec2:DescribeNetworkInterfaces
-                Resource: '*'
-              - Effect: Allow
-                Action:
-                  - ec2:CreateNetworkInterface
-                  - ec2:DeleteNetworkInterface
-                  - ec2:AssignPrivateIpAddresses
-                  - ec2:UnassignPrivateIpAddresses
-                Resource: '*'
 
   STSRole:
     Type: AWS::IAM::Role
@@ -203,14 +173,76 @@ Resources:
                 - !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${LambdaAccessRole}/fn-python-${AWS::StackName}
                 - !Sub arn:aws:sts::${AWS::AccountId}:assumed-role/${LambdaAccessRole}/fn-nodejs-${AWS::StackName}
             Action: sts:AssumeRole
-      Policies:
-        - PolicyName: StsPermissionsLimit
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Effect: Allow
-                Action: rds-db:connect
-                Resource: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*
+
+  XraySeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Access Function Lambda to access X-Ray. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Action:
+            - xray:PutTraceSegments
+            - xray:PutTelemetryRecords
+            - xray:GetSamplingRules
+            - xray:GetSamplingTargets
+            - xray:GetSamplingStatisticSummaries
+          Resource: '*'
+      Roles:
+        - !Ref LambdaAccessRole
+
+  CloudWatchLogsSeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Access Function Lambda to access CloudWatch logs. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          Effect: Allow
+          Action:
+            - logs:CreateLogGroup
+            - logs:CreateLogStream
+            - logs:PutLogEvents
+          Resource:
+            - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*
+            - !Sub arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:*:log-stream:*
+      Roles:
+        - !Ref LambdaAccessRole
+
+  VPCSeviceAccessPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub Allows the Access Function Lambda to create and delete network interfaces, and assign and unassign private IP addresses. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action:
+              - ec2:DescribeNetworkInterfaces
+            Resource: '*'
+          - Effect: Allow
+            Action:
+              - ec2:CreateNetworkInterface
+              - ec2:DeleteNetworkInterface
+              - ec2:AssignPrivateIpAddresses
+              - ec2:UnassignPrivateIpAddresses
+            Resource: '*'
+      Roles:
+        - !Ref LambdaAccessRole
+
+  StsPermissionsLimitPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub This policy provides a boundary on what can be assumed when the Access Function is trigged, using STS:AssumeRole. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Action: rds-db:connect
+            Resource: !Sub arn:aws:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:*
+      Roles:
+        - !Ref STSRole
 
 Outputs:
   PythonLambdaFunction:
