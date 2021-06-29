@@ -231,23 +231,31 @@ Resources:
               Service: vpc-flow-logs.amazonaws.com
             Action: sts:AssumeRole
       Path: /
-      Policies:
-        - PolicyName: flow-logs-role
-          PolicyDocument:
-            Version: "2012-10-17"
-            Statement:
-              - Action:
-                  - logs:CreateLogGroup
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
-                  - logs:DescribeLogGroups
-                  - logs:DescribeLogStreams
-                Effect: Allow
-                Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FlowLogsGroup}:*
+    Condition: IsFlowLogs
+
+  FlowLogsPolicy:
+    Type: AWS::IAM::ManagedPolicy
+    Properties:
+      Description: !Sub A Policy to create log groups and log streams, put log events, and describe log groups and log streams. Stack ${AWS::StackName}
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Action:
+              - logs:CreateLogGroup
+              - logs:CreateLogStream
+              - logs:PutLogEvents
+              - logs:DescribeLogGroups
+              - logs:DescribeLogStreams
+            Effect: Allow
+            Resource: !Sub arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:${FlowLogsGroup}:*
+      Roles:
+        - !Ref FlowLogsRole
     Condition: IsFlowLogs
 
   FlowLogs:
     Type: AWS::EC2::FlowLog
+    DependsOn:
+      - FlowLogsPolicy
     Properties:
       DeliverLogsPermissionArn: !GetAtt FlowLogsRole.Arn
       LogGroupName: !Ref FlowLogsGroup

@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Builds Amazon RDS Proxy with a Load Test (uksb-1rkqqff0c).
 
 Metadata:
-  Version: 0.0.1
+  Version: 0.0.3
 
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -528,4 +528,9 @@ Outputs:
   DashboardName:
     Description: CLoudWatch dashboard.
     Value: !GetAtt DashboardStack.Outputs.LoadTestDashboard
+    Condition: IsLoadTest
+
+  APIGatewayLogGroupName:
+    Description: The CloudWatch Group for load test API Gateway
+    Value: !GetAtt ApiStack.Outputs.APIGatewayLogGroupName
     Condition: IsLoadTest
