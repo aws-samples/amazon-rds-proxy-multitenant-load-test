@@ -31,41 +31,43 @@ You are responsible for the cost of the AWS services used while running this sam
 
 |Region|Launch Template|
 |------|---------------|
-|**US East (N. Virginia)** (us-east-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-east-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**US East (Ohio)** (us-east-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-east-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**US West (N. California)** (us-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-west-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**US West (Oregon)** (us-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-west-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Asia Pacific (Mumbai)** (ap-south-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-south-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Asia Pacific (Seoul)** (ap-northeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-northeast-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Asia Pacific (Singapore)** (ap-southeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Asia Pacific (Sydney)** (ap-southeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Asia Pacific (Tokyo)** (ap-northeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-northeast-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Canada (Central)** (ca-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ca-central-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Europe (Frankfurt)** (eu-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-central-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Europe (Ireland)** (eu-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
-|**Europe (London)** (eu-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=amazon-rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**US East (N. Virginia)** (us-east-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-east-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**US East (Ohio)** (us-east-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-east-2#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-east-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**US West (N. California)** (us-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-west-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**US West (Oregon)** (us-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=us-west-2#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-us-west-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Asia Pacific (Mumbai)** (ap-south-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-south-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-south-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Asia Pacific (Seoul)** (ap-northeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-2#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-northeast-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Asia Pacific (Singapore)** (ap-southeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Asia Pacific (Sydney)** (ap-southeast-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-southeast-2#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-southeast-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Asia Pacific (Tokyo)** (ap-northeast-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ap-northeast-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ap-northeast-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Canada (Central)** (ca-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=ca-central-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-ca-central-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Europe (Frankfurt)** (eu-central-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-central-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-central-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Europe (Ireland)** (eu-west-1) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-1#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-1/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
+|**Europe (London)** (eu-west-2) | [![Deploy to AWS](docs/deploy-to-aws.png)](https://console.aws.amazon.com/cloudformation/home?region=eu-west-2#/stacks/new?stackName=rds-proxy-multitenant-load-test&templateURL=https://s3.amazonaws.com/solution-builders-eu-west-2/amazon-rds-proxy-multitenant-load-test/latest/main.template)|
 
 2. If prompted, login using your AWS account credentials.
-1. You should see a screen titled "*Create Stack*" at the "*Specify template*" step. The fields specifying the CloudFormation
+3. You should see a screen titled "*Create Stack*" at the "*Specify template*" step. The fields specifying the CloudFormation
    template are pre-populated. Click the *Next* button at the bottom of the page.
-1. On the "*Specify stack details*" screen you may customize the following parameters of the CloudFormation stack:
+4. On the "*Specify stack details*" screen you may customize the following parameters of the CloudFormation stack:
 
 |Parameter label|Default|Description|
 |---------------|-------|-----------|
-|CreateLoadTest|true|If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.|
-|AvailabilityZones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.|
-|DBWriterClass|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.t3.medium.|
-|DBReaderClass|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
-|PerformanceInsightsRetentionPeriod|7|The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).|
-|LambdaRuntimeEnv|Node.js|The runtime for Lambda access Function/Layer.|
-|LocustAmiId|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from Systems Manager Parameter Store.|
-|LocustInstanceType|c5.large|The Amazon EC2 instance type used in the Load Test cluster that runs Locust.|
-|LocustVersion|latest|The Locust version to deploy.|
-|LocustSecondaryInstanceCapacity|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
-|ApiEndpointType|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
-|CIDRRange|Requires input|The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
-|Environment|DEV|The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).|
-|EnableFlowLogs|false|Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.|
+|Create Load Test Stack|true|If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.|
+|Availability Zones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.|
+|Database Writer Instance Class|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.t3.medium.|
+|Database Reader Instance Class|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
+|Performance Insights Retention Period|7|The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).|
+|Lambda Runtime Environment|Node.js|The runtime for Lambda access Function/Layer.|
+|Infrastructure Environment|DEV|The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).|
+|Flow Logs|false|Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.|
+|Latest Amazon Linux AMI|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from Systems Manager Parameter Store.|
+|Locust Instance Type|c5.large|The Amazon EC2 instance type used in the Load Test cluster that runs Locust.|
+|Locust App Version|latest|The Locust version to deploy.|
+|Locust Worker Instances|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
+|API Endpoint Type|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
+|ISP/Public IPv4|Requires input|The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
+
+Note: Whilst you can modify the name of the stack, do not increase the length of its name. Doing so will lead to certain AWS IAM Roles being created that exceed the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entity-length).
 
 When completed, click *Next*
 1. [Configure stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html) if desired, then click *Next*.
