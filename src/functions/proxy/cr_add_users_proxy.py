@@ -56,7 +56,6 @@ def create(event, context):
             host=ENDPOINT, user=USR, passwd=password, port=PORT, database=DBNAME
         )
         cur = conn.cursor()
-        cur.execute("START TRANSACTION;")
         for i in range(int(NUMBER_OF_USERS)):
             dbusername = "user" + str(i)
             dbname = "user_database" + str(i)
@@ -102,8 +101,6 @@ def create(event, context):
                     "IAMAuth": "REQUIRED",
                 }
             )
-
-        cur.execute("COMMIT;")
 
         rds.modify_db_proxy(DBProxyName=PROXY_NAME, Auth=proxy_auth)
 
