@@ -88,11 +88,13 @@ Parameters:
     Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.
     Type: String
     Default: db.r5.large
+    MinLength: 6
 
   DBWriterInstanceClass:
     Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.m5.large.
     Type: String
     Default: db.t3.medium
+    MinLength: 6
 
   PerformanceInsightsRetentionPeriod:
     Description: The amount of time, in days, to retain RDS Performance Insights data. Valid values range between 7 and 731 (2 years).
@@ -100,6 +102,7 @@ Parameters:
     Default: 7
     AllowedPattern: ^(73[0-1]|7[0-2][0-9]|[1-6][0-9][0-9]|[1-9][0-9]|[7-9])$
     ConstraintDescription: This parameter must be in the range 7-731
+    MinLength: 1
 
   LambdaRuntimeEnv:
     Description: The runtime for the Lambda access function. Valid values are (Python, Nodejs).
@@ -118,11 +121,13 @@ Parameters:
     Description: The Amazon EC2 instance type used in the Load Test VPC that runs Locust.
     Type: String
     Default: c5.large
+    MinLength: 6
 
   LocustVersion:
     Description: The Locust version to deploy.
     Type: String
     Default: latest
+    MinLength: 1
 
   LocustSecondaryInstanceCapacity:
     Description: The number of secondary Amazon EC2s for the Load Test Cluster. Allowed values are 2-20.
@@ -130,6 +135,7 @@ Parameters:
     Default: 2
     AllowedPattern: ^(20|[2-9]|1[0-9])$
     ConstraintDescription: This parameter must be in the range 2-20
+    MinLength: 1
 
   ApiEndpointType:
     Description: The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).
@@ -145,6 +151,7 @@ Parameters:
     Type: String
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/0-32
+    MinLength: 1
 
   Environment:
     Description: The type of environment with which to tag your infrastructure. Valid values are DEV (development), TEST (test), or PROD (production).
