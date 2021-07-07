@@ -39,15 +39,15 @@ Metadata:
       DBWriterInstanceClass:
         default: Database Writer Instance Class
       PerformanceInsightsRetentionPeriod:
-        deafult: Performance Insights Retention Period
+        default: Performance Insights Retention Period
       LambdaRuntimeEnv:
         default: Lambda Runtime Environment
       Environment:
-        deafult: Infrastructure Environment
+        default: Infrastructure Environment
       CreateLoadTest:
         default: Create Load Test Stack
       UsersToCreate:
-        default: Number of users to create
+        default: Number of Tenants to Create
       LocustAmiId:
         default: Latest Amazon Linux AMI
       LocustInstanceType:
@@ -55,7 +55,7 @@ Metadata:
       LocustVersion:
         default: Locust App Version
       LocustSecondaryInstanceCapacity:
-        deafult: Locust Worker Instances
+        default: Locust Worker Instances
       ApiEndpointType:
         default: API Endpoint Type
       CIDRRange:
@@ -65,7 +65,7 @@ Metadata:
 
 Parameters:
   CreateLoadTest:
-    Description: If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.
+    Description: If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy VPCs.
     Type: String
     AllowedValues:
       - false
@@ -74,33 +74,38 @@ Parameters:
     ConstraintDescription: Must specify 'true' or 'false'
 
   UsersToCreate:
-    Description: Each proxy can have up to 200 associated Secrets Manager secrets. Thus, each proxy can connect to with up to 200 different user accounts at any given time. Allowed values are 1-200
+    Description: The number of tenants to create in the Proxy and No Proxy VPC Aurora clusters. Each tenant has their own dedicated database containing dummy data. Allowed values are 1-200.
     Type: String
     Default: 200
     AllowedPattern: ^(20[0]|1[0-9][0-9]|[1-9]?[1-9])$
-    ConstraintDescription: Users parameter must be in the range 1-199
+    ConstraintDescription: This parameter must be in the range 1-200
 
   AvailabilityZones:
-    Description: The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.
+    Description: The list of Availability Zones to use for the subnets in the VPCs. Select two Availability Zones from the list.
     Type: List<AWS::EC2::AvailabilityZone::Name>
 
   DBReaderInstanceClass:
     Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.
     Type: String
     Default: db.r5.large
+    MinLength: 6
 
   DBWriterInstanceClass:
     Description: The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.m5.large.
     Type: String
     Default: db.t3.medium
+    MinLength: 6
 
   PerformanceInsightsRetentionPeriod:
-    Description: The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).
-    Type: Number
+    Description: The amount of time, in days, to retain RDS Performance Insights data. Valid values range between 7 and 731 (2 years).
+    Type: String
     Default: 7
+    AllowedPattern: ^(73[0-1]|7[0-2][0-9]|[1-6][0-9][0-9]|[1-9][0-9]|[7-9])$
+    ConstraintDescription: This parameter must be in the range 7-731
+    MinLength: 1
 
   LambdaRuntimeEnv:
-    Description: The runtime for Lambda access Function/Layer. Valid values are (Python, Nodejs)
+    Description: The runtime for the Lambda access function. Valid values are (Python, Nodejs).
     Type: String
     AllowedValues:
       - Python
@@ -113,19 +118,24 @@ Parameters:
     Default: /aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2
 
   LocustInstanceType:
-    Description: The Amazon EC2 instance type used in the Load Test cluster that runs Locust.
+    Description: The Amazon EC2 instance type used in the Load Test VPC that runs Locust.
     Type: String
     Default: c5.large
+    MinLength: 6
 
   LocustVersion:
     Description: The Locust version to deploy.
     Type: String
     Default: latest
+    MinLength: 1
 
   LocustSecondaryInstanceCapacity:
-    Description: The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.
-    Type: Number
+    Description: The number of secondary Amazon EC2s for the Load Test Cluster. Allowed values are 2-20.
+    Type: String
     Default: 2
+    AllowedPattern: ^(20|[2-9]|1[0-9])$
+    ConstraintDescription: This parameter must be in the range 2-20
+    MinLength: 1
 
   ApiEndpointType:
     Description: The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).
@@ -137,13 +147,14 @@ Parameters:
     Default: PRIVATE
 
   CIDRRange:
-    Description: The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed. You can use an open CIDR range (e.g. 0.0.0.0/0) to access from anywhere, but this is not recommended.
+    Description: The CIDR block or your IP address that you wil use to connect to the Locust Dashboard (e.g. 192.168.192.168/32). This limits the CIDR range from which the Locust dashboard can be accessed. You can use an open CIDR range (e.g. 0.0.0.0/0) to access from anywhere, but this is not recommended.
     Type: String
     AllowedPattern: ^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])(\/([0-9]|[1-2][0-9]|3[0-2]))$
     ConstraintDescription: CIDR block parameter must be in the form x.x.x.x/0-32
+    MinLength: 1
 
   Environment:
-    Description: The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).
+    Description: The type of environment with which to tag your infrastructure. Valid values are DEV (development), TEST (test), or PROD (production).
     Type: String
     AllowedValues:
       - DEV
@@ -152,7 +163,7 @@ Parameters:
     Default: DEV
 
   EnableFlowLogs:
-    Description: Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.
+    Description: Creates an optional CloudWatch Logs group to send the VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.
     Type: String
     AllowedValues:
       - true
@@ -496,7 +507,7 @@ Outputs:
     Value: !GetAtt LocustStack.Outputs.LocustAddress
     Condition: IsLoadTest
 
-  ApiGatewayURL:
+  APIGatewayURL:
     Description: URL of the API Gateway.
     Value: !GetAtt ApiStack.Outputs.ApiGatewayURL
     Condition: IsLoadTest

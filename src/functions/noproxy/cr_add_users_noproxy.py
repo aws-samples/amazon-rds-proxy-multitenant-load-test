@@ -42,7 +42,6 @@ def create(event, context):
             host=ENDPOINT, user=USR, passwd=password, port=PORT, database=DBNAME
         )
         cur = conn.cursor()
-        cur.execute("START TRANSACTION;")
         for i in range(int(NUMBER_OF_USERS)):
             dbusername = "user" + str(i)
             dbname = "user_database" + str(i)
@@ -59,7 +58,6 @@ def create(event, context):
                 cur.execute(query)
             for insert in insert_query:
                 cur.execute(insert)
-        cur.execute("COMMIT;")
         print("Success")
 
     except Exception as e:
