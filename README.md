@@ -153,4 +153,4 @@ Contributions are more than welcome. Please read the [code of conduct](CODE_OF_C
 
 ## License
 
-This library is licensed under the MIT-0 License. See the LICENSE file.
+This library is licensed under the MIT-0 License. See the LICENSE file. See also the THIRD-PARTY file for third-party notices.
