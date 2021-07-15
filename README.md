@@ -3,7 +3,7 @@
 [![Publish Version](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Publish%20Version/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
 [![Unit Tests](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Unit%20Tests/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
 
-An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL clusters, one with and one without Amazon RDS Proxy. This is repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy.
+An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL clusters, one with and one without Amazon RDS Proxy. This is a repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy.
 
 An overview of the architecture is below:
 
@@ -15,7 +15,7 @@ An overview of the architecture is below:
 
 To deploy the solution, you will require an AWS account. If you don’t already have an AWS account,
 create one at <https://aws.amazon.com> by following the on-screen instructions.
-Your access to the AWS account must have IAM permissions to launch AWS CloudFormation templates that create IAM roles.
+Your access to the AWS account must have IAM permissions to launch AWS CloudFormation templates that create AWS IAM roles.
 
 #### Deployment
 
@@ -65,37 +65,36 @@ You are responsible for the cost of the AWS services used while running this sam
 |API Endpoint Type|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
 |ISP/Public IPv4|Requires input|The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
 
-Note: Whilst you can modify the name of the stack, do not increase the length of its name to more than 20 characters. Doing so will lead to certain AWS IAM Roles being created that exceed the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entity-length).
+> **Note**
+Whilst you can modify the name of the stack, do not increase the length of its name to more than 20 characters. Doing so will lead to certain AWS IAM Roles being created that exceed the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entity-length).
 
 When completed, click *Next*
 1. [Configure stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html) if desired, then click *Next*.
-1. On the review you screen, you must check the boxes for:
+2. On the review you screen, you must check the boxes for:
    * "*I acknowledge that AWS CloudFormation might create IAM resources*"
    * "*I acknowledge that AWS CloudFormation might create IAM resources with custom names*"
    * "*I acknowledge that AWS CloudFormation might require the following capability: CAPABILITY_AUTO_EXPAND*"
 
    These are required to allow CloudFormation to create a Role to allow access to resources needed by the stack and name the resources in a dynamic way.
-1. Click *Create Stack*
-1. Wait for the CloudFormation stack to launch. This will take around 30 minutes. Completion is indicated when the "Stack status" is "*CREATE_COMPLETE*".
+3. Click *Create Stack*
+4. Wait for the CloudFormation stack to launch. This will take around 30 minutes. Completion is indicated when the "Stack status" is "*CREATE_COMPLETE*".
    * You can monitor the stack creation progress in the "Events" tab.
-1. Note the *EC2SQLServerEip* and *RDSSQLEndpoint* displayed in the *Outputs* tab of the main stack. This can be used to access the EC2 host and RDS instance.
-
-If you are familiar with Locust, you can also modify the Locust file as written in the CloudFormation template. For more information, please refer to [here](https://docs.locust.io/en/stable/writing-a-locustfile.html) for how to write a Locustfile.
+5. Note the *LocustAddress* and *APIGatewayURL* displayed in the *Outputs* tab of the main stack. These can be used to access the Locust dashboard and direct the load  test towards the created Amazon API Gateway.
 
 ## Local Development
-See [Local Development](docs/LOCAL_DEVELOPMENT.md) guide to get a copy of the project up and running on your local machine for development and testing purposes.
+See the [Local Development](docs/LOCAL_DEVELOPMENT.md) guide to get a copy of the project up and running on your local machine for development and testing purposes.
 
 ### Clean up
 
 To remove the stack:
 
 1. Open the AWS CloudFormation Console
-1. Click the *aws-multitenant-rds-proxy* project, right-click and select "*Delete Stack*"
-1. Your stack will take some time to be deleted. You can track its progress in the "Events" tab.
-1. When it is done, the status will change from "DELETE_IN_PROGRESS" to "DELETE_COMPLETE". It will then disappear from the list.
+2. Click the *rds-proxy-load-test* project, right-click and select "*Delete Stack*"
+3. Your stack will take some time to be deleted. You can track its progress in the "Events" tab.
+4. When it is done, the status will change from "DELETE_IN_PROGRESS" to "DELETE_COMPLETE". It will then disappear from the list.
 
 ## Detailed Pricing
-This sample is intended to be deployed only for as long as is strictly necessary, to avoid incurring additional costs. As soon as the load test is completed, the stack should be destroyed (see 'Clean up' above). Note that all pricing is estimated based on the us-east-1 region, and without the Free Tier.
+This sample is intended to be deployed only for as long as is strictly necessary, to avoid incurring additional costs. As soon as the load test is completed, the stack should be deleted (see 'Clean up' above). Note that all pricing is estimated based on the us-east-1 region, and without the Free Tier.
 
 Assuming a 150 request per second load test for 30 minutes, the price breakdown is estimated as follows:
 
@@ -104,7 +103,7 @@ Assuming a 150 request per second load test for 30 minutes, the price breakdown 
 |Amazon Aurora MySQL| $0.78 |4x db.r5.large and 2x db.t3.medium database instances running continuously, 150 RPS.|
 |Amazon RDS Proxy| $0.02 |Based on 2 vCPUs of db.r5.large, running continuously.|
 |Amazon EC2| $0.14 |3x c5.large instances running continuously.|
-|Amazon CloudWatch| $0.01 |CloudWatch dashboard + 20 metrics.|
+|Amazon CloudWatch| $0.01 |CloudWatch dashboard + 30 metrics.|
 |AWS X-Ray| $0.07 |150 Traces Per Second, with a 5% sampling rate.|
 |AWS Secrets Manager| $0.73 |200 secrets, and 75 API calls per second.|
 |AWS Lambda| $1.22 |150 RPS, assuming 2000ms duration per request.|
@@ -119,8 +118,8 @@ Assuming a 150 request per second load test for 4 hours, the price breakdown is 
 |---------------|-------|-----------|
 |Amazon Aurora MySQL| $6.25 |4x db.r5.large and 2x db.t3.medium database instances running continuously, 150 RPS.|
 |Amazon RDS Proxy| $0.12 |Based on 2 vCPUs of db.r5.large, running continuously.|
-|Amazon EC2| $1.08 |3x c5.large instances running continuously.|
-|Amazon CloudWatch| $0.07 |CloudWatch dashboard + 20 metrics.|
+|Amazon EC2| $1.11 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $0.05 |CloudWatch dashboard + 30 metrics.|
 |AWS X-Ray| $0.56 |150 Traces Per Second, with a 5% sampling rate.|
 |AWS Secrets Manager| $5.84 |200 secrets, and 75 API calls per second.|
 |AWS Lambda| $9.75 |150 RPS, assuming 2000ms duration per request.|
@@ -129,21 +128,21 @@ Assuming a 150 request per second load test for 4 hours, the price breakdown is 
 |Data Transfer| $0.02 |170Gb transfer between AZs.|
 |Total| $31.21 |Total.|
 
-The above pricing examples (excluding the RDS Proxy cost) are based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=f8297aa11c6330c3d82f7e37a43e83bb997def58).
+The above pricing examples (excluding the RDS Proxy cost) are based off the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=f8297aa11c6330c3d82f7e37a43e83bb997def58).
 
-Assuming the resources are deployed for a month, without a load test (all of the resources are running, except Locust), the price breakdown is estimated as follows:
+Assuming the resources are deployed for a month, without a load test (all of the resources are running, except for the load test using Locust), the price breakdown is estimated as follows:
 
 |Service|Cost|Description|
 |---------------|-------|-----------|
 |Amazon Aurora MySQL| $968.94 |4x db.r5.large and 2x db.t3.medium database instances running continuously.|
 |Amazon RDS Proxy| $21.60 |Based on 2 vCPUs of db.r5.large, running continuously.|
-|Amazon EC2| $195.15 |3x c5.large instances running continuously.|
-|Amazon CloudWatch| $12.00 |CloudWatch dashboard + 20 metrics.|
+|Amazon EC2| $195.65 |3x c5.large instances running continuously.|
+|Amazon CloudWatch| $12.00 |CloudWatch dashboard + 30 metrics.|
 |AWS Secrets Manager| $80.00 |200 secrets.|
 |AWS Private Link| $14.60 |Interface VPC endpoint for API Gateway, 2AZs.|
-|Total| $1274.89 |Total.|
+|Total| $1293.49 |Total.|
 
-The above pricing example (excluding the RDS Proxy cost) is based off of the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=de00e572e8979bcddd967d114b81107b8f598642).
+The above pricing example (excluding the RDS Proxy cost) is based off the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=de00e572e8979bcddd967d114b81107b8f598642).
 
 ## Contributing
 
