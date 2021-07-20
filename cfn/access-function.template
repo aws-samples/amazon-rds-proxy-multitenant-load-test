@@ -43,7 +43,7 @@ Conditions:
 Transform: AWS::Serverless-2016-10-31
 
 Resources:
-  PythonLambdaFunction:
+  PythonFunction:
     Type: AWS::Serverless::Function
     DependsOn:
       - XraySeviceAccessPolicy
@@ -76,7 +76,7 @@ Resources:
           - !Ref PrivateSubnet2
     Condition: IsPython
 
-  NodeJsLambdaFunction:
+  NodeJsFunction:
     Type: AWS::Serverless::Function
     DependsOn:
       - XraySeviceAccessPolicy
@@ -245,10 +245,10 @@ Resources:
         - !Ref STSRole
 
 Outputs:
-  PythonLambdaFunction:
-    Value: !Ref PythonLambdaFunction
+  PythonFunction:
+    Value: !Ref PythonFunction
     Condition: IsPython
 
-  NodeJsLambdaFunction:
-    Value: !Ref NodeJsLambdaFunction
+  NodeJsFunction:
+    Value: !Ref NodeJsFunction
     Condition: IsNodeJs

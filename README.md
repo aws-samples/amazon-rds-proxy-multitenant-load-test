@@ -70,16 +70,16 @@ Whilst you can modify the name of the stack, do not increase the length of its n
 
 When completed, click *Next*
 1. [Configure stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html) if desired, then click *Next*.
-2. On the review you screen, you must check the boxes for:
+1. On the review you screen, you must check the boxes for:
    * "*I acknowledge that AWS CloudFormation might create IAM resources*"
    * "*I acknowledge that AWS CloudFormation might create IAM resources with custom names*"
    * "*I acknowledge that AWS CloudFormation might require the following capability: CAPABILITY_AUTO_EXPAND*"
 
    These are required to allow CloudFormation to create a Role to allow access to resources needed by the stack and name the resources in a dynamic way.
-3. Click *Create Stack*
-4. Wait for the CloudFormation stack to launch. This will take around 30 minutes. Completion is indicated when the "Stack status" is "*CREATE_COMPLETE*".
+1. Click *Create Stack*
+1. Wait for the CloudFormation stack to launch. This will take around 30 minutes. Completion is indicated when the "Stack status" is "*CREATE_COMPLETE*".
    * You can monitor the stack creation progress in the "Events" tab.
-5. Note the *LocustAddress* and *APIGatewayURL* displayed in the *Outputs* tab of the main stack. These can be used to access the Locust dashboard and direct the load  test towards the created Amazon API Gateway.
+1. Note the *LocustAddress* and *APIGatewayURL* displayed in the *Outputs* tab of the main stack. These can be used to access the Locust dashboard and direct the load  test towards the created Amazon API Gateway.
 
 ## Local Development
 See the [Local Development](docs/LOCAL_DEVELOPMENT.md) guide to get a copy of the project up and running on your local machine for development and testing purposes.
@@ -89,9 +89,9 @@ See the [Local Development](docs/LOCAL_DEVELOPMENT.md) guide to get a copy of th
 To remove the stack:
 
 1. Open the AWS CloudFormation Console
-2. Click the *rds-proxy-load-test* project, right-click and select "*Delete Stack*"
-3. Your stack will take some time to be deleted. You can track its progress in the "Events" tab.
-4. When it is done, the status will change from "DELETE_IN_PROGRESS" to "DELETE_COMPLETE". It will then disappear from the list.
+1. Click the *rds-proxy-load-test* project, right-click and select "*Delete Stack*"
+1. Your stack will take some time to be deleted. You can track its progress in the "Events" tab.
+1. When it is done, the status will change from "DELETE_IN_PROGRESS" to "DELETE_COMPLETE". It will then disappear from the list.
 
 ## Detailed Pricing
 This sample is intended to be deployed only for as long as is strictly necessary, to avoid incurring additional costs. As soon as the load test is completed, the stack should be deleted (see 'Clean up' above). Note that all pricing is estimated based on the us-east-1 region, and without the Free Tier.
