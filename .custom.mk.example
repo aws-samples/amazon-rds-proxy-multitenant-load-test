@@ -1,6 +1,6 @@
 AWS_REGION=""
 BUCKET_NAME=""
-STACK_NAME="rds-test-01"
+STACK_NAME="rds-proxy-load-test"
 LOAD_TEST="true|false"
 LAMBDA_RUNTIME_ENV="Nodejs|Python"
 ENABLE_FLOW_LOGS="true|false"
