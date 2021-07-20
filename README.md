@@ -66,7 +66,7 @@ You are responsible for the cost of the AWS services used while running this sam
 |ISP/Public IPv4|Requires input|The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
 
 > **Note**
-Whilst you can modify the name of the stack, do not increase the length of its name to more than 20 characters. Doing so will lead to certain AWS IAM Roles being created that exceed the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference_iam-quotas.html#reference_iam-quotas-entity-length).
+Whilst you can modify the name of the stack, do not increase the length of its name to more than 22 characters. Doing so will lead to a 'CREATE_FAILED' for the stack, with an 'Invalid principal in policy' error message for either the ProxyAccessStack or the NoProxyAccessStack. The reason for this is an AWS Lambda function name exceeding the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#aws-resource-lambda-function-properties).
 
 When completed, click *Next*
 1. [Configure stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html) if desired, then click *Next*.
