@@ -60,7 +60,7 @@ Resources:
           CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
-      FunctionName: !Sub fn-python-${AWS::StackName}
+      FunctionName: fn-python-loadtest-access-function-987123
       Handler: access.lambda_handler
       Layers:
         - !Ref LayerVersionArn
@@ -93,7 +93,7 @@ Resources:
           CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
-      FunctionName: !Sub fn-nodejs-${AWS::StackName}
+      FunctionName: fn-nodejs-loadtest-access-function-987123
       Handler: index.handler
       Layers:
         - !Ref LayerVersionArn
