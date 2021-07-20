@@ -335,7 +335,7 @@ Resources:
           Value: !Ref Environment
     Condition: IsLoadTest
 
-  ProxyLambdaAccessStack:
+  ProxyAccessStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: access-function.template
@@ -359,7 +359,7 @@ Resources:
         - Key: Environment
           Value: !Ref Environment
 
-  NoProxyLambdaAccessStack:
+  NoProxyAccessStack:
     Type: AWS::CloudFormation::Stack
     Properties:
       TemplateURL: access-function.template
@@ -439,12 +439,12 @@ Resources:
       Parameters:
         ProxyAccessLambda: !If
           - IsPython
-          - !GetAtt ProxyLambdaAccessStack.Outputs.PythonLambdaFunction
-          - !GetAtt ProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+          - !GetAtt ProxyAccessStack.Outputs.PythonFunction
+          - !GetAtt ProxyAccessStack.Outputs.NodeJsFunction
         NoProxyAccessLambda: !If
           - IsPython
-          - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
-          - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+          - !GetAtt NoProxyAccessStack.Outputs.PythonFunction
+          - !GetAtt NoProxyAccessStack.Outputs.NodeJsFunction
         ProxyClusterName: !GetAtt ProxyRDSStack.Outputs.DBClusterName
         NoProxyClusterName: !GetAtt NoProxyRDSStack.Outputs.DBClusterName
       Tags:
@@ -487,12 +487,12 @@ Resources:
         PrivateSubnet2: !GetAtt LoadTestVPCStack.Outputs.PrivateSubnet2
         ProxyAccessLambda: !If
           - IsPython
-          - !GetAtt ProxyLambdaAccessStack.Outputs.PythonLambdaFunction
-          - !GetAtt ProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+          - !GetAtt ProxyAccessStack.Outputs.PythonFunction
+          - !GetAtt ProxyAccessStack.Outputs.NodeJsFunction
         NoProxyAccessLambda: !If
           - IsPython
-          - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
-          - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+          - !GetAtt NoProxyAccessStack.Outputs.PythonFunction
+          - !GetAtt NoProxyAccessStack.Outputs.NodeJsFunction
         ApiEndpointType: !Ref ApiEndpointType
       Tags:
         - Key: Project
@@ -516,15 +516,15 @@ Outputs:
     Description: Proxy tenant data access lambda function.
     Value: !If
       - IsPython
-      - !GetAtt ProxyLambdaAccessStack.Outputs.PythonLambdaFunction
-      - !GetAtt ProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+      - !GetAtt ProxyAccessStack.Outputs.PythonFunction
+      - !GetAtt ProxyAccessStack.Outputs.NodeJsFunction
 
   NoProxyLambdaName:
     Description: NoProxy tenant data access lambda function.
     Value: !If
       - IsPython
-      - !GetAtt NoProxyLambdaAccessStack.Outputs.PythonLambdaFunction
-      - !GetAtt NoProxyLambdaAccessStack.Outputs.NodeJsLambdaFunction
+      - !GetAtt NoProxyAccessStack.Outputs.PythonFunction
+      - !GetAtt NoProxyAccessStack.Outputs.NodeJsFunction
     Condition: IsLoadTest
 
   ProxyDB:
