@@ -60,6 +60,7 @@ Resources:
           CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
+          ACCOUNT_ID: !Ref AWS::AccountId
       FunctionName: !Sub fn-python-${AWS::StackName}
       Handler: access.lambda_handler
       Layers:
@@ -93,6 +94,7 @@ Resources:
           CLUSTER_ENDPOINT_RESOURCE: !Sub arn:${AWS::Partition}:rds-db:${AWS::Region}:${AWS::AccountId}:dbuser:${ClusterEndpointResourceId}/user
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
+          ACCOUNT_ID: !Ref AWS::AccountId
       FunctionName: !Sub fn-nodejs-${AWS::StackName}
       Handler: index.handler
       Layers:

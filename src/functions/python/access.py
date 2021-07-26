@@ -10,6 +10,8 @@ import mysql.connector
 ENDPOINT = os.environ["ENDPOINT"]
 PORT = "3306"
 REGION = os.environ["REGION"]
+ACCOUNT_ID = os.environ["ACCOUNT_ID"]
+CLUSTER_ENDPOINT_RESOURCE = os.environ["CLUSTER_ENDPOINT_RESOURCE"]
 os.environ["LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN"] = "1"
 user_name = "user"
 database_name = "user_database"
@@ -31,9 +33,8 @@ def lambda_handler(event, context):
     # database = 'user_database100'
 
     # Resource name
-    resource_a = os.environ["CLUSTER_ENDPOINT_RESOURCE"]
-    resource = resource_a + tenant_id
-    # resource = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user100'
+    resource = CLUSTER_ENDPOINT_RESOURCE + tenant_id
+    # resource = f"arn:aws:rds-db:{REGION}:{ACCOUNT_ID}:dbuser:*/user100"
 
     arn = os.environ["IAM_ARN"]
 

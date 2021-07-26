@@ -6,6 +6,8 @@ var database_name = 'user_database';
 var AWS = require('aws-sdk');
 var dbPort = 3306;
 var dbRegion = process.env['REGION'];
+var accountId = process.env['ACCOUNT_ID'];
+var cluster_endpoint_resource = process.env['CLUSTER_ENDPOINT_RESOURCE'];
 var dbHost = process.env['ENDPOINT'];
 
 
@@ -20,17 +22,16 @@ exports.handler = async (event) => {
 
     // tenant id
     var tenant_id = event.queryStringParameters.tenant;
-    var dbUser = user_name.concat(tenant_id);
+    var dbUser = user_name + tenant_id;
     // var dbUser = 'user100';
 
     // database
-    var database = database_name.concat(tenant_id);
+    var database = database_name + tenant_id;
     // var database = 'user_database100';
 
     // Resource name
-    var resource_a = process.env['CLUSTER_ENDPOINT_RESOURCE'];
-    var resource = resource_a.concat(tenant_id);
-    // var resource = 'arn:aws:rds-db:us-east-1:account-no:dbuser:*/user100';
+    var resource = cluster_endpoint_resource + tenant_id;
+    // var resource = 'arn:aws:rds-db:' + dbRegion + ':' + accountId + ':dbuser:*/user100';
 
     var arn = process.env['IAM_ARN'];
 
