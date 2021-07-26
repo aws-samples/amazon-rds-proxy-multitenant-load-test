@@ -447,6 +447,7 @@ Resources:
           - !GetAtt NoProxyAccessStack.Outputs.NodeJsFunction
         ProxyClusterName: !GetAtt ProxyRDSStack.Outputs.DBClusterName
         NoProxyClusterName: !GetAtt NoProxyRDSStack.Outputs.DBClusterName
+        DBProxyName: !GetAtt ProxyRDSStack.Outputs.DBProxyName
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]
