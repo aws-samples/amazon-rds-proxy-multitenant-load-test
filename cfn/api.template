@@ -69,7 +69,7 @@ Resources:
           - !Ref ApiEndpointType
         VpcEndpointIds:
           - !Ref VPCEndpoint
-      Name: !Sub LoadTestApi-${AWS::StackName}
+      Name: !Sub LoadTestApi-${AWS::Partition}-${AWS::AccountId}-${AWS::Region}-98765abc
       Policy:
         Statement:
           - Action: execute-api:Invoke

@@ -10,7 +10,6 @@ var accountId = process.env['ACCOUNT_ID'];
 var cluster_endpoint_resource = process.env['CLUSTER_ENDPOINT_RESOURCE'];
 var dbHost = process.env['ENDPOINT'];
 
-
 exports.handler = async (event) => {
 
     var random_ints = [];
