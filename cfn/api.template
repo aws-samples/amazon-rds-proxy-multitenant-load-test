@@ -69,7 +69,7 @@ Resources:
           - !Ref ApiEndpointType
         VpcEndpointIds:
           - !Ref VPCEndpoint
-      Name: !Sub LoadTestApi-${AWS::Partition}-${AWS::AccountId}-${AWS::Region}-98765abc
+      Name: !Sub LoadTestApi-${AWS::StackName}
       Policy:
         Statement:
           - Action: execute-api:Invoke
@@ -194,3 +194,6 @@ Outputs:
 
   APIGatewayLogGroupName:
     Value: !Ref LoadTestApiLogGroup
+
+  ApiGatewayName:
+    Value: !Sub LoadTestApi-${AWS::StackName}
