@@ -131,7 +131,7 @@ Resources:
         - AuthScheme: SECRETS
           IAMAuth: REQUIRED
           SecretArn: !Ref DBSecret
-      DBProxyName: proxy987123
+      DBProxyName: !Sub proxy-${AWS::Partition}-${AWS::AccountId}-${AWS::Region}-98765abc
       EngineFamily: MYSQL
       RoleArn: !GetAtt DBSecretsRole.Arn
       VpcSubnetIds:

@@ -194,3 +194,6 @@ Outputs:
 
   APIGatewayLogGroupName:
     Value: !Ref LoadTestApiLogGroup
+
+  ApiGatewayName:
+    Value: !Sub LoadTestApi-${AWS::StackName}
