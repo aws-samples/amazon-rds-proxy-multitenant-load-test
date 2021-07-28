@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Multi-tenant Amazon Aurora MySQL with RDS Proxy and an optional load test (uksb-1rkqqff0c).
 
 Metadata:
-  Version: 0.0.5
+  Version: 0.0.6
 
   AWS::CloudFormation::Interface:
     ParameterGroups:
