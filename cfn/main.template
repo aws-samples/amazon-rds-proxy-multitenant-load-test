@@ -448,7 +448,7 @@ Resources:
         ProxyClusterName: !GetAtt ProxyRDSStack.Outputs.DBClusterName
         NoProxyClusterName: !GetAtt NoProxyRDSStack.Outputs.DBClusterName
         DBProxyName: !GetAtt ProxyRDSStack.Outputs.DBProxyName
-        ApiGatewayName: !GetAtt ApiStack.ApiGatewayName
+        ApiGatewayName: !GetAtt ApiStack.Outputs.ApiGatewayName
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, LoadTestMap, ResourceTags]
