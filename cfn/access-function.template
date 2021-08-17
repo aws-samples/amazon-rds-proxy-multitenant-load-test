@@ -33,6 +33,9 @@ Parameters:
   ClusterEndpointResourceId:
     Type: String
 
+  SSLCertURL:
+    Type: String
+
 Conditions:
   IsPython: !Equals [!Ref LambdaRuntimeEnv, Python]
 
@@ -61,6 +64,7 @@ Resources:
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
           ACCOUNT_ID: !Ref AWS::AccountId
+          SSL_CERTIFICATE_URL: !Ref SSLCertURL
       FunctionName: !Sub fn-python-${AWS::StackName}
       Handler: access.lambda_handler
       Layers:
@@ -95,6 +99,7 @@ Resources:
           REGION: !Ref AWS::Region
           IAM_ARN: !GetAtt STSRole.Arn
           ACCOUNT_ID: !Ref AWS::AccountId
+          SSL_CERTIFICATE_URL: !Ref SSLCertURL
       FunctionName: !Sub fn-nodejs-${AWS::StackName}
       Handler: index.handler
       Layers:
