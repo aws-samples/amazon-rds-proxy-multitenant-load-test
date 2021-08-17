@@ -6,7 +6,7 @@ import secrets
 import string
 
 import boto3
-import mysql.connector
+import pymysql.cursors
 from crhelper import CfnResource
 
 logger = logging.getLogger(__name__)
@@ -18,7 +18,7 @@ secretsmanager = boto3.client("secretsmanager")
 rds = boto3.client("rds")
 
 ENDPOINT = os.environ["ENDPOINT"]
-PORT = "3306"
+PORT = 3306
 USR = os.environ["USER"]
 NUMBER_OF_USERS = os.environ["USERS_TO_CREATE"]
 NUMBER_OF_ROWS = os.environ["NUMBER_OF_ROWS"]
@@ -52,8 +52,13 @@ def create(event, context):
     num_rows = int(NUMBER_OF_ROWS)
 
     try:
-        conn = mysql.connector.connect(
-            host=ENDPOINT, user=USR, passwd=password, port=PORT, database=DBNAME
+        conn = pymysql.connect(
+            host=ENDPOINT,
+            user=USR,
+            password=password,
+            port=PORT,
+            database=DBNAME,
+            cursorclass=pymysql.cursors.DictCursor,
         )
         cur = conn.cursor()
         for i in range(int(NUMBER_OF_USERS)):
@@ -84,7 +89,7 @@ def create(event, context):
                 "username": f"user{str(i)}",
                 "password": f"{passwords[i]}",
                 "engine": "mysql",
-                "port": 3306,
+                "port": PORT,
                 "dbname": f"{dbname}",
                 "dbClusterIdentifier": "proxy",
             }

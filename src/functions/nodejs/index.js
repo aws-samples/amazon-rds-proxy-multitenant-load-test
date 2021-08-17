@@ -1,6 +1,7 @@
 // Access layer
 const mysql = require('mysql2/promise');
-require('tls').DEFAULT_MIN_VERSION = 'TLSv1';
+const https = require('https');
+const fs = require('fs');
 var user_name = 'user';
 var database_name = 'user_database';
 var AWS = require('aws-sdk');
@@ -9,6 +10,12 @@ var dbRegion = process.env['REGION'];
 var accountId = process.env['ACCOUNT_ID'];
 var cluster_endpoint_resource = process.env['CLUSTER_ENDPOINT_RESOURCE'];
 var dbHost = process.env['ENDPOINT'];
+var ssl_certificate_url = process.env["SSL_CERTIFICATE_URL"];
+
+const file = fs.createWriteStream("/tmp/SSLCA.pem");
+const request = https.get(ssl_certificate_url, function(response) {
+  response.pipe(file);
+});
 
 exports.handler = async (event) => {
 
@@ -84,7 +91,10 @@ exports.handler = async (event) => {
         const connection = await mysql.createConnection({
             host     : dbHost,
             user     : dbUser,
-            ssl: 'Amazon RDS',
+            ssl: {
+                ca: fs.readFileSync('/tmp/SSLCA.pem'),
+                flags: 'SSL_VERIFY_SERVER_CERT'
+            },
             password : dbToken,
             port: dbPort,
             database: database,

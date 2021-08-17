@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Multi-tenant Amazon Aurora MySQL with RDS Proxy and an optional load test (uksb-1rkqqff0c).
 
 Metadata:
-  Version: 0.0.6
+  Version: 0.0.7
 
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -353,6 +353,7 @@ Resources:
         ProxySecurityGroup: !GetAtt ProxyRDSStack.Outputs.ProxySecurityGroup
         CreateRDSProxy: !FindInMap [StackMap, ProxyMap, CreateRDSProxy]
         ClusterEndpointResourceId: !GetAtt ProxyRDSStack.Outputs.ClusterEndpointResourceId
+        SSLCertURL: https://www.amazontrust.com/repository/AmazonRootCA1.pem
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, ProxyMap, ResourceTags]
@@ -377,6 +378,7 @@ Resources:
         ProxySecurityGroup: NA
         CreateRDSProxy: !FindInMap [StackMap, NoProxyMap, CreateRDSProxy]
         ClusterEndpointResourceId: !GetAtt NoProxyRDSStack.Outputs.ClusterEndpointResourceId
+        SSLCertURL: !Sub https://truststore.pki.rds.amazonaws.com/${AWS::Region}/${AWS::Region}-bundle.pem
       Tags:
         - Key: Project
           Value: !FindInMap [StackMap, NoProxyMap, ResourceTags]

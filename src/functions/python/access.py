@@ -3,18 +3,22 @@ import json
 import os
 import random
 import sys
+import urllib.request
 
 import boto3
-import mysql.connector
+import pymysql.cursors
 
 ENDPOINT = os.environ["ENDPOINT"]
-PORT = "3306"
+PORT = 3306
 REGION = os.environ["REGION"]
 ACCOUNT_ID = os.environ["ACCOUNT_ID"]
 CLUSTER_ENDPOINT_RESOURCE = os.environ["CLUSTER_ENDPOINT_RESOURCE"]
+SSL_CERTIFICATE_URL = os.environ["SSL_CERTIFICATE_URL"]
 os.environ["LIBMYSQL_ENABLE_CLEARTEXT_PLUGIN"] = "1"
 user_name = "user"
 database_name = "user_database"
+
+urllib.request.urlretrieve(SSL_CERTIFICATE_URL, "/tmp/SSLCA.pem")
 
 
 def lambda_handler(event, context):
@@ -65,8 +69,15 @@ def lambda_handler(event, context):
     )
 
     try:
-        conn = mysql.connector.connect(
-            host=ENDPOINT, user=dbUser, passwd=token, port=PORT, database=database
+        conn = pymysql.connect(
+            host=ENDPOINT,
+            user=dbUser,
+            password=token,
+            port=PORT,
+            database=database,
+            cursorclass=pymysql.cursors.DictCursor,
+            ssl_ca="/tmp/SSLCA.pem",
+            ssl_verify_cert=True,
         )
         cur = conn.cursor()
         cur.execute(query)
