@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: Creates a Lambda LayerVersion that contains library or runtime code needed by a Lambda Function.
+Description: Creates a Lambda LayerVersion that contains library or runtime code needed by the Lambda Functions.
 
 Parameters:
   LambdaRuntimeEnv:

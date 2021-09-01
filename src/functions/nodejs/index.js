@@ -55,7 +55,7 @@ exports.handler = async (event) => {
 
         sts.assumeRole({
             RoleArn: arn,
-            RoleSessionName: "test",
+            RoleSessionName: "session",
             Policy: JSON.stringify(session_policy)
         }, (err, iamCredentialResponse) => {
             if (err) {

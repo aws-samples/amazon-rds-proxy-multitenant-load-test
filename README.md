@@ -3,9 +3,9 @@
 [![Publish Version](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Publish%20Version/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
 [![Unit Tests](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Unit%20Tests/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
 
-An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL clusters, one with and one without Amazon RDS Proxy. This is a repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy.
+An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL-Compatible Edition clusters, one with and one without Amazon RDS Proxy. This is a repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy.
 
-An overview of the architecture is below:
+Reference architecture:
 
 ![Architecture](docs/Architecture.png)
 
@@ -15,7 +15,7 @@ An overview of the architecture is below:
 
 To deploy the solution, you will require an AWS account. If you don’t already have an AWS account,
 create one at <https://aws.amazon.com> by following the on-screen instructions.
-Your access to the AWS account must have IAM permissions to launch AWS CloudFormation templates that create AWS IAM roles.
+Your access to the AWS account must have AWS IAM permissions to launch AWS CloudFormation templates that create IAM roles.
 
 #### Deployment
 
@@ -23,7 +23,7 @@ The application is deployed as an [AWS CloudFormation](https://aws.amazon.com/cl
 
 > **Note**
 You are responsible for the cost of the AWS services used while running this sample deployment. There is no additional
->cost for using this sample. For full details, see the pricing pages for each AWS service you will be using in this sample. Prices are subject to change.
+>cost for using this sample. For full details, see the pricing section of this readme, as well as the pricing pages for each AWS service you will be using in this sample. Prices are subject to change.
 
 1. Deploy the latest CloudFormation template by following the link below for your preferred AWS region:
 
@@ -50,25 +50,25 @@ You are responsible for the cost of the AWS services used while running this sam
 
 |Parameter label|Default|Description|
 |---------------|-------|-----------|
-|Create Load Test Stack|true|If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between Proxy and No Proxy.|
-|Availability Zones|Requires input|The list of Availability Zones to use for the subnets in the VPC. Select two Availability Zones from the list.|
-|Database Writer Instance Class|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.t3.medium.|
-|Database Reader Instance Class|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
-|Performance Insights Retention Period|7|The amount of time, in days, to retain Performance Insights data. Valid values range between 7 and 731 (2 years).|
-|Lambda Runtime Environment|Node.js|The runtime for Lambda access Function/Layer.|
-|Infrastructure Environment|DEV|The type of environment to tag your infrastructure with. You can specify DEV (development), TEST (test), or PROD (production).|
-|Flow Logs|false|Optional CloudWatch Logs group to send VPC flow logs to. Flow Logs incur additional cost. Set to "false" to disable.|
-|Latest Amazon Linux AMI|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from Systems Manager Parameter Store.|
+|Create Load Test Stack|true|If True, this creates the Load Test and Proxy VPCs, and accompanying resources as seen in the architecture diagram, in order to run a load test and compare metrics between Proxy and No Proxy.|
+|Availability Zones|Requires input|The list of Availability Zones to use for the subnets in the AWS VPC. Select two Availability Zones from the list.|
+|Database Writer Instance Class|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora writer, for example db.t3.medium.|
+|Database Reader Instance Class|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora replicas, for example db.m5.large.|
+|Performance Insights Retention Period|7|The amount of time, in days, to retain RDS Performance Insights data. Valid values range between 7 and 731 (2 years).|
+|Lambda Runtime Environment|Node.js|The runtime for the AWS Lambda access function.|
+|Infrastructure Environment|DEV|The type of environment with which to tag your infrastructure. You can specify DEV (development), TEST (test), or PROD (production).|
+|Flow Logs|false|An optional Amazon CloudWatch Logs group to send VPC flow logs to. Flow Logs incur an additional cost. Set to "false" to disable.|
+|Latest Amazon Linux AMI|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from AWS Systems Manager Parameter Store.|
 |Locust Instance Type|c5.large|The Amazon EC2 instance type used in the Load Test cluster that runs Locust.|
 |Locust App Version|latest|The Locust version to deploy.|
 |Locust Worker Instances|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
 |API Endpoint Type|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
-|ISP/Public IPv4|Requires input|The CIDR block of your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
+|ISP/Public IPv4|Requires input|The CIDR block or your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
 
 > **Note**
 Whilst you can modify the name of the stack, do not increase the length of its name to more than 21 characters. Doing so will lead to a 'CREATE_FAILED' for the stack, with an 'Invalid principal in policy' error message for either the ProxyAccessStack or the NoProxyAccessStack. The reason for this is an AWS Lambda function name exceeding the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#aws-resource-lambda-function-properties).
 
-When completed, click *Next*
+When completed, click *Next*.
 1. [Configure stack options](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/cfn-console-add-tags.html) if desired, then click *Next*.
 1. On the review you screen, you must check the boxes for:
    * "*I acknowledge that AWS CloudFormation might create IAM resources*"
@@ -76,10 +76,10 @@ When completed, click *Next*
    * "*I acknowledge that AWS CloudFormation might require the following capability: CAPABILITY_AUTO_EXPAND*"
 
    These are required to allow CloudFormation to create a Role to allow access to resources needed by the stack and name the resources in a dynamic way.
-1. Click *Create Stack*
-1. Wait for the CloudFormation stack to launch. This will take around 30 minutes. Completion is indicated when the "Stack status" is "*CREATE_COMPLETE*".
+1. Click *Create Stack*.
+1. Wait for the CloudFormation stack to launch. This will take around 30 minutes. Completion is indicated when the "Stack status" becomes "*CREATE_COMPLETE*".
    * You can monitor the stack creation progress in the "Events" tab.
-1. Note the *LocustAddress* and *APIGatewayURL* displayed in the *Outputs* tab of the main stack. These can be used to access the Locust dashboard and direct the load  test towards the created Amazon API Gateway.
+1. Note the *LocustAddress* and *APIGatewayURL* displayed in the *Outputs* tab of the main stack. These can be used to access the Locust dashboard and direct the load  test towards the created API Gateway.
 
 ## Local Development
 See the [Local Development](docs/LOCAL_DEVELOPMENT.md) guide to get a copy of the project up and running on your local machine for development and testing purposes.
@@ -88,8 +88,8 @@ See the [Local Development](docs/LOCAL_DEVELOPMENT.md) guide to get a copy of th
 
 To remove the stack:
 
-1. Open the AWS CloudFormation Console
-1. Click the *rds-proxy-load-test* project, right-click and select "*Delete Stack*"
+1. Open the AWS CloudFormation Console.
+1. Click the *rds-proxy-load-test* project, right-click and select "*Delete Stack*".
 1. Your stack will take some time to be deleted. You can track its progress in the "Events" tab.
 1. When it is done, the status will change from "DELETE_IN_PROGRESS" to "DELETE_COMPLETE". It will then disappear from the list.
 
@@ -108,8 +108,8 @@ Assuming a 150 request per second load test for 30 minutes, the price breakdown 
 |AWS Secrets Manager| $0.73 |200 secrets, and 75 API calls per second.|
 |AWS Lambda| $1.22 |150 RPS, assuming 2000ms duration per request.|
 |Amazon API Gateway| $0.93 |150 RPS to the REST API type.|
-|AWS Private Link| $0.01 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month.|
-|Data Transfer| $0.00 |170Gb transfer between AZs.|
+|AWS Private Link| $0.01 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per month.|
+|Data Transfer| $0.00 |170Gb transfer between AZs per month.|
 |Total| $3.90 |Total.|
 
 Assuming a 150 request per second load test for 4 hours, the price breakdown is estimated as follows:
@@ -124,8 +124,8 @@ Assuming a 150 request per second load test for 4 hours, the price breakdown is 
 |AWS Secrets Manager| $5.84 |200 secrets, and 75 API calls per second.|
 |AWS Lambda| $9.75 |150 RPS, assuming 2000ms duration per request.|
 |Amazon API Gateway| $7.43 |150 RPS to the REST API type.|
-|AWS Private Link| $0.09 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per Month.|
-|Data Transfer| $0.02 |170Gb transfer between AZs.|
+|AWS Private Link| $0.09 |Interface VPC endpoint for API Gateway, 2AZs, 170GB in total processed per month.|
+|Data Transfer| $0.02 |170Gb transfer between AZs per month.|
 |Total| $31.21 |Total.|
 
 The above pricing examples (excluding the RDS Proxy cost) are based off the AWS Pricing Calculator, and derived from the monthly cost taken [here](https://calculator.aws/#/estimate?id=f8297aa11c6330c3d82f7e37a43e83bb997def58).
