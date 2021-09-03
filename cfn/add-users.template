@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: Adds users and dummy data to the database.
+Description: Adds users and dummy data to the databases.
 
 Parameters:
   VpcID:

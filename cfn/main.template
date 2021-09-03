@@ -3,7 +3,7 @@ AWSTemplateFormatVersion: "2010-09-09"
 Description: Multi-tenant Amazon Aurora MySQL with RDS Proxy and an optional load test (uksb-1rkqqff0c).
 
 Metadata:
-  Version: 0.0.7
+  Version: 0.0.8
 
   AWS::CloudFormation::Interface:
     ParameterGroups:
@@ -531,13 +531,22 @@ Outputs:
       - !GetAtt NoProxyAccessStack.Outputs.NodeJsFunction
     Condition: IsLoadTest
 
-  ProxyDB:
-    Description: Proxy database instance.
-    Value: !GetAtt ProxyRDSStack.Outputs.DBInstanceName
+  ProxyAuroraReplica1:
+    Description: Proxy Aurora replica 1.
+    Value: !GetAtt ProxyRDSStack.Outputs.AuroraReplicaName1
 
-  NoProxyDB:
-    Description: NoProxy database instance.
-    Value: !GetAtt NoProxyRDSStack.Outputs.DBInstanceName
+  NoProxyAuroraReplica1:
+    Description: NoProxy Aurora replica 1.
+    Value: !GetAtt NoProxyRDSStack.Outputs.AuroraReplicaName1
+    Condition: IsLoadTest
+
+  ProxyAuroraReplica2:
+    Description: Proxy Aurora replica 2.
+    Value: !GetAtt ProxyRDSStack.Outputs.AuroraReplicaName2
+
+  NoProxyAuroraReplica2:
+    Description: NoProxy Aurora replica 2.
+    Value: !GetAtt NoProxyRDSStack.Outputs.AuroraReplicaName2
     Condition: IsLoadTest
 
   DashboardName:
@@ -546,6 +555,6 @@ Outputs:
     Condition: IsLoadTest
 
   APIGatewayLogGroupName:
-    Description: The CloudWatch Group for load test API Gateway
+    Description: The CloudWatch Group for load test API Gateway.
     Value: !GetAtt ApiStack.Outputs.APIGatewayLogGroupName
     Condition: IsLoadTest

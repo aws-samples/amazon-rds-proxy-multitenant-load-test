@@ -287,8 +287,11 @@ Outputs:
     Value: !GetAtt DBProxy.DBProxyArn
     Condition: IsRDSProxy
 
-  DBInstanceName:
-    Value: !Ref DBWriterInstance
+  AuroraReplicaName1:
+    Value: !Ref DBReaderInstance1
+
+  AuroraReplicaName2:
+    Value: !Ref DBReaderInstance2
 
   DBClusterName:
     Value: !Ref DBCluster

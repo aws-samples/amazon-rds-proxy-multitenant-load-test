@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: "2010-09-09"
 
-Description: Privides API Gateway endpoint for Locust App.
+Description: Creates an API Gateway that the EC2 instances with Locust will send requests to.
 
 Parameters:
   VpcCidrBlock:
