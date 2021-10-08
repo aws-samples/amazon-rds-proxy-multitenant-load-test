@@ -3,7 +3,7 @@
 [![Publish Version](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Publish%20Version/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
 [![Unit Tests](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/workflows/Unit%20Tests/badge.svg)](https://github.com/aws-samples/amazon-rds-proxy-multitenant-load-test/actions)
 
-An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL-Compatible Edition clusters, one with and one without Amazon RDS Proxy. This is a repository that is referenced in the accompanying blog post: Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy.
+An AWS CloudFormation template that builds and load tests two multi-tenant Amazon Aurora MySQL-Compatible Edition clusters, one with and one without Amazon RDS Proxy. This is a repository that is referenced in the accompanying blog post: [Build and load test a multi-tenant SaaS database proxy solution with Amazon RDS Proxy](https://aws.amazon.com/blogs/database/build-and-load-test-a-multi-tenant-saas-database-proxy-solution-with-amazon-rds-proxy/).
 
 Reference architecture:
 
@@ -50,20 +50,21 @@ You are responsible for the cost of the AWS services used while running this sam
 
 |Parameter label|Default|Description|
 |---------------|-------|-----------|
-|Create Load Test Stack|true|If True, this creates the Load Test and Proxy VPCs, and accompanying resources as seen in the architecture diagram, in order to run a load test and compare metrics between Proxy and No Proxy.|
-|Availability Zones|Requires input|The list of Availability Zones to use for the subnets in the AWS VPC. Select two Availability Zones from the list.|
-|Database Writer Instance Class|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora writer, for example db.t3.medium.|
-|Database Reader Instance Class|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora replicas, for example db.m5.large.|
-|Performance Insights Retention Period|7|The amount of time, in days, to retain RDS Performance Insights data. Valid values range between 7 and 731 (2 years).|
-|Lambda Runtime Environment|Node.js|The runtime for the AWS Lambda access function.|
-|Infrastructure Environment|DEV|The type of environment with which to tag your infrastructure. You can specify DEV (development), TEST (test), or PROD (production).|
-|Flow Logs|false|An optional Amazon CloudWatch Logs group to send VPC flow logs to. Flow Logs incur an additional cost. Set to "false" to disable.|
+|Create Load Test Stack|true|If False, this creates a Proxy VPC and accompanying reosurces. If True, this additionally creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between the Proxy and No Proxy VPCs.|
+|Availability Zones|Requires input|The list of Availability Zones to use for the subnets in the VPCs. Select two Availability Zones from the list.|
+|Database Reader Instance Class|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
+|Database Writer Instance Class|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.m5.large.|
+|Performance Insights Retention Period|7|The amount of time, in days, to retain RDS Performance Insights data. Valid values are 7 and 731 (2 years).|
+|Lambda Runtime Environment|Node.js|The runtime for the Lambda access function. Valid values are (Python, Nodejs).|
+|Infrastructure Environment|DEV|The type of environment with which to tag your infrastructure. Valid values are DEV (development), TEST (test), or PROD (production).|
+|Flow Logs|false|Creates an optional CloudWatch Logs group to send the VPC flow logs to. Flow Logs incur additional costs. Set to "false" to disable.|
+|Number of Tenants to Create|200|The number of tenants to create in the Proxy and No Proxy VPC Aurora clusters. Each tenant has their own dedicated database containing dummy data. Allowed values are 1-200.|
 |Latest Amazon Linux AMI|/aws/service/ami-amazon-linux-latest/amzn2-ami-hvm-x86_64-gp2|The latest Amazon Linux AMI from AWS Systems Manager Parameter Store.|
 |Locust Instance Type|c5.large|The Amazon EC2 instance type used in the Load Test cluster that runs Locust.|
 |Locust App Version|latest|The Locust version to deploy.|
-|Locust Worker Instances|2|The number of secondary Amazon EC2s for the Load Test Cluster. Minimum value is 2.|
+|Locust Worker Instances|2|The number of secondary Amazon EC2s for the Load Test Cluster. Allowed values are 2-20.|
 |API Endpoint Type|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
-|ISP/Public IPv4|Requires input|The CIDR block or your IP address that you wil use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
+|ISP/Public IPv4|Requires input|The CIDR block or your IP address that you will use to connect to the Locust Dashboard (e.g. 192.168.192.168/32). This limits the CIDR range from which the Locust dashboard can be accessed. You can use an open CIDR range (e.g. 0.0.0.0/0) to access from anywhere, but this is not recommended.|
 
 > **Note**
 Whilst you can modify the name of the stack, do not increase the length of its name to more than 21 characters. Doing so will lead to a 'CREATE_FAILED' for the stack, with an 'Invalid principal in policy' error message for either the ProxyAccessStack or the NoProxyAccessStack. The reason for this is an AWS Lambda function name exceeding the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#aws-resource-lambda-function-properties).
