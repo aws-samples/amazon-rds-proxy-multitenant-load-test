@@ -65,7 +65,7 @@ Metadata:
 
 Parameters:
   CreateLoadTest:
-    Description: If True, this creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between the Proxy and No Proxy VPCs.
+    Description: If False, this creates a Proxy VPC and accompanying reosurces. If True, this additionally creates a Load Test VPC, No Proxy VPC, and accompanying reosurces, in order to run a load test and compare metrics between the Proxy and No Proxy VPCs.
     Type: String
     AllowedValues:
       - false
