@@ -64,7 +64,7 @@ You are responsible for the cost of the AWS services used while running this sam
 |Locust App Version|latest|The Locust version to deploy.|
 |Locust Worker Instances|2|The number of secondary Amazon EC2s for the Load Test Cluster. Allowed values are 2-20.|
 |API Endpoint Type|PRIVATE|The Amazon API Gateway endpoint type. Valid values are (EDGE, REGIONAL, PRIVATE).|
-|ISP/Public IPv4|Requires input|The CIDR block or your IP address that you will use to connect to the Locust Dashboard (e.g. 192.168.192.168/32). This limits the CIDR range from which the Locust dashboard can be accessed. You can use an open CIDR range (e.g. 0.0.0.0/0) to access from anywhere, but this is not recommended.|
+|ISP/Public IPv4|Requires input|The CIDR block or your IP address that you will use to connect to the Locust Dashboard. This limits the CIDR range from which the Locust dashboard can be accessed.|
 
 > **Note**
 Whilst you can modify the name of the stack, do not increase the length of its name to more than 21 characters. Doing so will lead to a 'CREATE_FAILED' for the stack, with an 'Invalid principal in policy' error message for either the ProxyAccessStack or the NoProxyAccessStack. The reason for this is an AWS Lambda function name exceeding the maximum number of allowed characters. More information on this can be found [here](https://docs.aws.amazon.com/AWSCloudFormation/latest/UserGuide/aws-resource-lambda-function.html#aws-resource-lambda-function-properties).
