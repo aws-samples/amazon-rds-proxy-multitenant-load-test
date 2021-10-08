@@ -50,7 +50,7 @@ You are responsible for the cost of the AWS services used while running this sam
 
 |Parameter label|Default|Description|
 |---------------|-------|-----------|
-|Create Load Test Stack|true|If False, this creates a Proxy VPC and accompanying reosurces. If True, this additionally creates a Load Test VPC and an accompanying No Proxy VPC, in order to run a load test and compare metrics between the Proxy and No Proxy VPCs.|
+|Create Load Test Stack|true|If False, this creates a Proxy VPC and accompanying reosurces. If True, this additionally creates a Load Test VPC, No Proxy VPC, and accompanying reosurces, in order to run a load test and compare metrics between the Proxy and No Proxy VPCs.|
 |Availability Zones|Requires input|The list of Availability Zones to use for the subnets in the VPCs. Select two Availability Zones from the list.|
 |Database Reader Instance Class|db.r5.large|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Replicas, for example db.m5.large.|
 |Database Writer Instance Class|db.t3.medium|The database instance class for the Proxy and No Proxy VPC Amazon Aurora Writer, for example db.m5.large.|
