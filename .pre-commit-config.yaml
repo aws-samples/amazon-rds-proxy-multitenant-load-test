@@ -5,7 +5,7 @@ repos:
 
 # General
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v3.4.0
+  rev: v4.0.1
   hooks:
   - id: check-case-conflict
   - id: detect-private-key
@@ -36,7 +36,7 @@ repos:
 
 # CloudFormation
 - repo: https://github.com/aws-cloudformation/cfn-python-lint
-  rev: v0.49.0
+  rev: v0.54.2
   hooks:
   - id: cfn-python-lint
     name: AWS CloudFormation Linter
@@ -50,7 +50,7 @@ repos:
 
 # Python
 - repo: https://github.com/pycqa/pylint
-  rev: v2.8.2
+  rev: v2.11.1
   hooks:
   - id: pylint
     args:
@@ -58,18 +58,18 @@ repos:
     - --disable=E0401
 
 - repo: https://github.com/PyCQA/isort
-  rev: 5.8.0
+  rev: 5.9.3
   hooks:
   - id: isort
 
 - repo: https://github.com/psf/black
-  rev: 21.4b2
+  rev: 21.9b0
   hooks:
   - id: black
 
 # Yaml
 - repo: https://github.com/macisamuele/language-formatters-pre-commit-hooks
-  rev: v2.0.0
+  rev: v2.1.0
   hooks:
   - id: pretty-format-yaml
     args:
